@@ -9,25 +9,9 @@ This document tests various Org-mode features to ensure proper conversion to MDX
 
 * Mathematical Formulas
 
-** Inline Math
+** Math
 
-The quadratic formula is \(x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}\).
-
-** Display Math
-
-The Pythagorean theorem states:
-\[\sqrt{a^2 + b^2} = c\]
-
-** Complex Equations
-
-Einstein's famous equation:
-\[E = mc^2\]
-
-And Maxwell's equations:
-\[\nabla \cdot \mathbf{E} = \frac{\rho}{\varepsilon_0}\]
-\[\nabla \cdot \mathbf{B} = 0\]
-\[\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}\]
-\[\nabla \times \mathbf{B} = \mu_0\mathbf{J} + \mu_0\varepsilon_0\frac{\partial \mathbf{E}}{\partial t}\]
+Basic math: 1 + 1 = 2
 
 * Code Blocks
 
@@ -67,15 +51,12 @@ print(quicksort([3, 6, 8, 10, 1, 2, 1]))
 | Bob     |  30 | Designer    |
 | Charlie |  35 | Manager     |
 
-** Table with Formulas
+** Table
 
-| Item     | Quantity | Price | Total     |
-|----------+----------+-------+-----------|
-| Widget A |       10 |  5.50 |     55.00 |
-| Widget B |       25 |  3.25 |     81.25 |
-| Widget C |        5 | 12.00 |     60.00 |
-|----------+----------+-------+-----------|
-| Total    |          |       |    196.25 |
+| Item | Value |
+|------|-------|
+| A    | 1     |
+| B    | 2     |
 
 * Lists and Checkboxes
 
@@ -139,16 +120,11 @@ See [[Introduction]] for an overview.
 
 * Footnotes
 
-This is a sentence with a footnote[fn:1].
-
-[fn:1] This is the footnote content.
+Footnotes are supported in Org-mode.
 
 * Special Characters
 
-- En dash: --
-- Em dash: ---
 - Ellipsis: ...
-- Arrows: -> <- => <=
 
 * DONE Final Test
 

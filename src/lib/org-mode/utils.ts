@@ -11,7 +11,10 @@ export function extractOrgKeywords(content: string): OrgKeywords {
   while ((match = keywordRegex.exec(content)) !== null) {
     const key = match[1].toLowerCase();
     const value = match[2].trim();
-    keywords[key] = value;
+    // Skip options, latex_header, and date as they may cause issues
+    if (key !== 'options' && key !== 'latex_header' && key !== 'date') {
+      keywords[key] = value;
+    }
   }
 
   return keywords;
