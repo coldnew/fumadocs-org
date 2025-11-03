@@ -30,67 +30,51 @@ function getCalloutTypeFromOrgType(orgType: string): string | null {
 }
 
 /**
- * Plugin to handle Org math expressions directly in AST
+ * Convert AST nodes to markdown string
  */
-function orgMath() {
-  return (tree: any) => {
-    visit(tree, 'text', (node: any) => {
-      if (node.value) {
-        // Handle inline math $...$
-        node.value = node.value.replace(/\$([^$]+)\$/g, '$$$1$$');
-        // Handle display math $$...$$
-        node.value = node.value.replace(/\$\$([^$]+)\$\$/g, '$$$\n$1\n$$$');
+function astToMarkdown(nodes: any[]): string {
+  return nodes
+    .map((node) => {
+      if (node.type === 'text') {
+        // Convert Org formatting to Markdown
+        let text = node.value;
+        // Convert Org bold *text* to **text**
+        text = text.replace(/\*([^*]+)\*/g, '**$1**');
+        // Convert Org italic /text/ to *text*
+        text = text.replace(/\/([^/]+)\//g, '*$1*');
+        return text;
       }
-    });
-  };
+      if (node.type === 'bold')
+        return `**${astToMarkdown(node.children || [])}**`;
+      if (node.type === 'italic')
+        return `*${astToMarkdown(node.children || [])}*`;
+      if (node.type === 'code') return `\`${node.value}\``;
+      if (node.type === 'verbatim') return `\`${node.value}\``;
+      if (node.type === 'paragraph') return astToMarkdown(node.children || []);
+      if (node.type === 'newline') return '\n';
+      // Add more node types as needed
+      return '';
+    })
+    .join('');
 }
 
 /**
- * Plugin to detect and mark math expressions in Org AST
+ * Function to convert Org AST to HTML text
  */
-function detectMath() {
-  return (tree: any) => {
-    visit(tree, 'text', (node: any) => {
-      if (node.value && node.value.includes('$')) {
-        // Check if this text node contains math
-        const hasInlineMath = /\$[^$]+\$/g.test(node.value);
-        const hasDisplayMath = /\$\$[^$]+\$\$/g.test(node.value);
-
-        if (hasInlineMath || hasDisplayMath) {
-          // Mark the parent as containing math
-          // This is a simple approach - we'll handle this in the HTML processing
-        }
-      }
-    });
-  };
-}
-
-/**
- * Plugin to handle Org callouts directly in AST
- */
-function orgCallouts() {
-  return (tree: any) => {
-    visit(tree, (node: any) => {
-      if (
-        node.type === 'text' &&
-        node.value &&
-        node.value.includes('#+begin_')
-      ) {
-        // Handle callouts in text
-        const calloutRegex = /#\+begin_(\w+)\s*\n([\s\S]*?)#\+end_\1/g;
-        node.value = node.value.replace(
-          calloutRegex,
-          (match: string, type: string, content: string) => {
-            const fumadocsType = getCalloutTypeFromOrgType(type);
-            if (fumadocsType) {
-              return `<Callout type="${fumadocsType}">\n${content.trim()}\n</Callout>`;
-            }
-            return match;
-          },
-        );
-      }
-    });
-  };
+function astToHtml(ast: any[]): string {
+  return ast
+    .map((node) => {
+      if (node.type === 'text') return node.value;
+      if (node.type === 'bold')
+        return '<strong>' + astToHtml(node.children) + '</strong>';
+      if (node.type === 'italic')
+        return '<em>' + astToHtml(node.children) + '</em>';
+      if (node.type === 'code') return '<code>' + node.value + '</code>';
+      if (node.type === 'verbatim') return '<code>' + node.value + '</code>';
+      // Add more types as needed
+      return '';
+    })
+    .join('');
 }
 
 /**
@@ -113,25 +97,6 @@ function orgCaptions() {
       }
     });
   };
-}
-
-/**
- * Function to convert Org AST to HTML text
- */
-function astToHtml(ast: any[]): string {
-  return ast
-    .map((node) => {
-      if (node.type === 'text') return node.value;
-      if (node.type === 'bold')
-        return '<strong>' + astToHtml(node.children) + '</strong>';
-      if (node.type === 'italic')
-        return '<em>' + astToHtml(node.children) + '</em>';
-      if (node.type === 'code') return '<code>' + node.value + '</code>';
-      if (node.type === 'verbatim') return '<code>' + node.value + '</code>';
-      // Add more types as needed
-      return '';
-    })
-    .join('');
 }
 
 /**
@@ -375,6 +340,18 @@ export async function convertOrgToMdx(
   filename: string,
   options: ConversionOptions = {},
 ): Promise<ConversionResult> {
+  // Extract keywords first before modifying content
+  const keywords = extractOrgKeywords(orgContent);
+
+  // Set defaults
+  if (!keywords.title) {
+    keywords.title = options.defaultTitle || generateDefaultTitle(filename);
+  }
+  if (!keywords.description) {
+    keywords.description =
+      options.defaultDescription || 'Generated from Org-mode';
+  }
+
   // Extract callouts for separate processing
   const callouts: Array<{ type: string; content: string; index: number }> = [];
   let calloutIndex = 0;
@@ -395,18 +372,6 @@ export async function convertOrgToMdx(
       return match;
     },
   );
-
-  // Extract keywords
-  const keywords = extractOrgKeywords(orgContent);
-
-  // Set defaults
-  if (!keywords.title) {
-    keywords.title = options.defaultTitle || generateDefaultTitle(filename);
-  }
-  if (!keywords.description) {
-    keywords.description =
-      options.defaultDescription || 'Generated from Org-mode';
-  }
 
   // Convert using direct AST pipeline (inspired by org2mdx)
   const processor = unified()
