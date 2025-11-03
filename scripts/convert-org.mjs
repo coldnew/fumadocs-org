@@ -6,7 +6,7 @@ import uniorg2rehype from 'uniorg-rehype';
 import rehypeRemark from 'rehype-remark';
 import remarkGfm from 'remark-gfm';
 import remarkStringify from 'remark-stringify';
-import { stringify as yamlStringify } from 'yaml';
+import matter from 'gray-matter';
 import { globSync } from 'glob';
 
 const docsDir = 'content/docs';
@@ -47,8 +47,8 @@ for (const orgFile of orgFiles) {
     .processSync(orgContent)
     .toString();
 
-  // Generate YAML frontmatter
-  const frontmatter = `---\n${yamlStringify(keywords)}---\n\n`;
+  // Generate frontmatter using gray-matter
+  const frontmatter = matter.stringify('', keywords);
 
   // Add generated comment as MDX comment
   const comment = `{/* This file is auto-generated from ${orgFile}. Do not edit directly. */}\n\n`;
