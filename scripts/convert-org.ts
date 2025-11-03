@@ -13,6 +13,17 @@ async function main() {
   // Find all .org files
   const orgFiles = globSync('**/*.org', { cwd: contentDir });
 
+  // Clean up orphaned .mdx files
+  const existingMdxFiles = globSync('**/*.mdx', { cwd: cacheDir });
+  for (const mdxFile of existingMdxFiles) {
+    const orgFile = mdxFile.replace(/\.mdx$/, '.org');
+    if (!orgFiles.includes(orgFile)) {
+      const mdxPath = path.join(cacheDir, mdxFile);
+      fs.unlinkSync(mdxPath);
+      console.log(`Removed orphaned .mdx: ${mdxFile}`);
+    }
+  }
+
   for (const orgFile of orgFiles) {
     const orgPath = path.join(contentDir, orgFile);
     const mdxPath = path.join(cacheDir, orgFile.replace(/\.org$/, '.mdx'));
