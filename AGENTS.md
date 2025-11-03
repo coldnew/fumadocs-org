@@ -35,6 +35,7 @@
 - **Task Creation**: Only create task files when explicitly approved by the user
 - **Task File Access**: Only read task files in the tasks/ folder that have not been committed yet
 - **Task Format**: Use checkbox format (- [ ]) for task items in the Tasks section
+- **Pre-commit Review**: Before committing implementation, re-review whether the task description matches the current implementation. If deciding not to follow the task implementation, report the reason
 
 ## Testing
 
