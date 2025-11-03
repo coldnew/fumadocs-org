@@ -1,5 +1,4 @@
 import { defineDocs, defineConfig } from 'fumadocs-mdx/config';
-import { orgRemarkPlugin } from '@/lib/org-mode';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
@@ -10,7 +9,7 @@ export const docs = defineDocs({
 
 export default defineConfig({
   mdxOptions: {
-    remarkPlugins: [orgRemarkPlugin, remarkMath],
+    remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],
   },
 });

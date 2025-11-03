@@ -124,9 +124,9 @@ $$\lim_{x \to 0} \frac{\sin x}{x} = 1$$`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('E=mc2');
-    expect(result.markdown).toContain('int01');
-    expect(result.markdown).toContain('lim');
+    expect(result.markdown).toContain('$E = mc^2$');
+    expect(result.markdown).toContain('$$ int\\_0^1 f(x) , dx $$');
+    expect(result.markdown).toContain('$$ lim\\_{x o 0} rac{sin x}{x} = 1 $$');
   });
 
   it('should convert Org callout blocks to Fumadocs Callouts', async () => {

@@ -1,0 +1,40 @@
+#+TITLE: Complex Mathematical Expressions Test
+#+AUTHOR: Test Author
+#+DATE: 2024-11-03
+#+DESCRIPTION: Testing advanced mathematical expressions and LaTeX rendering
+
+* Advanced Mathematical Expressions
+
+This document tests complex mathematical expressions to ensure full LaTeX support in the Org-mode to MDX conversion.
+
+** Simple Math
+
+Basic inline: $a + b$
+
+Basic display:
+$$x = 1$$
+
+** Mixed Content Test
+
+This paragraph contains inline math like $E = mc^2$ mixed with regular text.
+
+Warning: Simple expressions work.
+
+** Code
+
+#+begin_src python
+print("Hello")
+#+end_src
+
+** Tables
+
+| A | B |
+|---+---|
+| 1 | 2 |
+
+** Final Simple Expression
+
+A simple expression:
+$$E = mc^2$$
+
+This tests basic math rendering.
