@@ -26,3 +26,9 @@
 
 - **Commits**: Use Conventional Commits format (e.g., `feat: add new feature`, `fix: resolve bug`)
 - **Commit Policy**: Do not proactively git commit unless explicitly instructed by the user
+
+## Task Management
+
+- **New Tasks**: Always confirm with the user before creating a new task file in the tasks/ folder
+- **Task Numbering**: If creating a new task, use sequential numbering (e.g., 0002-xxx.md after 0001-xxx.md)
+- **Task Creation**: Only create task files when explicitly approved by the user
