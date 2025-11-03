@@ -25,3 +25,4 @@
 ## Git Conventions
 
 - **Commits**: Use Conventional Commits format (e.g., `feat: add new feature`, `fix: resolve bug`)
+- **Commit Policy**: Do not proactively git commit unless explicitly instructed by the user
