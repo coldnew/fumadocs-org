@@ -21,6 +21,18 @@ $$\int_0^1 f(x) \, dx$$
 Complex formula:
 $$\lim_{x \to 0} \frac{\sin x}{x} = 1$$
 
+#+begin_warning
+This is a warning message with *bold* text and a $math$ formula.
+#+end_warning
+
+#+begin_note
+This is an informational note.
+#+end_note
+
+#+begin_tip
+Here's a helpful tip for users.
+#+end_tip
+
 * Code Blocks
 
 ** JavaScript Example

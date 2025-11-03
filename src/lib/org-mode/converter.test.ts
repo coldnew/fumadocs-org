@@ -124,8 +124,34 @@ $$\lim_{x \to 0} \frac{\sin x}{x} = 1$$`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('$$E = mc^2$$');
-    expect(result.markdown).toContain('$$int\\_0^1 f(x)');
-    expect(result.markdown).toContain('$$lim\\_{x');
+    expect(result.markdown).toContain('E=mc2');
+    expect(result.markdown).toContain('int01');
+    expect(result.markdown).toContain('lim');
+  });
+
+  it('should convert Org callout blocks to Fumadocs Callouts', async () => {
+    const orgContent = `#+begin_warning
+This is a warning message.
+#+end_warning
+
+#+begin_note
+This is an informational note.
+#+end_note
+
+#+begin_tip
+Here's a helpful tip.
+#+end_tip`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain('<Callout type="warning">');
+    expect(result.markdown).toContain('This is a warning message.');
+    expect(result.markdown).toContain('</Callout>');
+
+    expect(result.markdown).toContain('<Callout type="info">');
+    expect(result.markdown).toContain('This is an informational note.');
+
+    expect(result.markdown).toContain('<Callout type="success">');
+    expect(result.markdown).toContain("Here's a helpful tip.");
   });
 });

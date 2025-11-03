@@ -1,0 +1,17 @@
+# Ignore auto-generated content
+content/
+
+# Ignore build outputs
+.next/
+out/
+dist/
+
+# Ignore dependencies
+node_modules/
+
+# Ignore logs
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
