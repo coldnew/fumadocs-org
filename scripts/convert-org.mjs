@@ -6,6 +6,7 @@ import uniorg2rehype from 'uniorg-rehype';
 import rehypeRemark from 'rehype-remark';
 import remarkGfm from 'remark-gfm';
 import remarkStringify from 'remark-stringify';
+import { stringify as yamlStringify } from 'yaml';
 import { globSync } from 'glob';
 
 const docsDir = 'content/docs';
@@ -20,9 +21,21 @@ for (const orgFile of orgFiles) {
   // Read org content
   const orgContent = fs.readFileSync(orgPath, 'utf8');
 
-  // Extract TITLE from org content
-  const titleMatch = orgContent.match(/^#\+TITLE:\s*(.+)$/m);
-  const title = titleMatch ? titleMatch[1].trim() : path.basename(orgFile, '.org').replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  // Extract all Org keywords
+  const keywordRegex = /^#\+(\w+):\s*(.+)$/gm;
+  const keywords = {};
+  let match;
+  while ((match = keywordRegex.exec(orgContent)) !== null) {
+    const key = match[1].toLowerCase();
+    const value = match[2].trim();
+    keywords[key] = value;
+  }
+
+  // Set defaults
+  if (!keywords.title) {
+    keywords.title = path.basename(orgFile, '.org').replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
+  keywords.description = keywords.description || 'Generated from Org-mode';
 
   // Convert to markdown
   const markdown = unified()
@@ -34,8 +47,8 @@ for (const orgFile of orgFiles) {
     .processSync(orgContent)
     .toString();
 
-  // Generate frontmatter
-  const frontmatter = `---\ntitle: ${title}\ndescription: Generated from Org-mode\n---\n\n`;
+  // Generate YAML frontmatter
+  const frontmatter = `---\n${yamlStringify(keywords)}---\n\n`;
 
   // Add generated comment as MDX comment
   const comment = `{/* This file is auto-generated from ${orgFile}. Do not edit directly. */}\n\n`;

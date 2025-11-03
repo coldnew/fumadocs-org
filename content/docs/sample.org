@@ -1,4 +1,8 @@
 #+TITLE: Sample Org-mode Document
+#+AUTHOR: Test Author
+#+EMAIL: test@example.com
+#+DATE: 2024-11-03
+#+DESCRIPTION: This is a sample document to test Org-mode support in Fumadocs.
 
 This is a sample document to test Org-mode support in Fumadocs.
 
