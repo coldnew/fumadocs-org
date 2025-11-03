@@ -154,4 +154,95 @@ Here's a helpful tip.
     expect(result.markdown).toContain('<Callout type="success">');
     expect(result.markdown).toContain("Here's a helpful tip.");
   });
+
+  it('should preserve formatting inside callouts', async () => {
+    const orgContent = `#+begin_warning
+This is a *bold* message with /italic/ text and $math$ formula.
+#+end_warning`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain('<Callout type="warning">');
+    expect(result.markdown).toContain('**bold**');
+    expect(result.markdown).toContain('*italic*');
+    expect(result.markdown).toContain('math');
+    expect(result.markdown).toContain('</Callout>');
+  });
+
+  it('should handle empty content', async () => {
+    const orgContent = ``;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.frontmatter).toContain('title: Test');
+    expect(result.markdown.trim()).toBe('');
+  });
+
+  it('should handle malformed Org syntax gracefully', async () => {
+    const orgContent = `* Unclosed heading
+
+Some content without proper structure.`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain('# Unclosed heading');
+    expect(result.markdown).toContain('Some content without proper structure.');
+  });
+
+  it('should handle multiple callout types', async () => {
+    const orgContent = `#+begin_warning
+Warning content
+#+end_warning
+
+#+begin_error
+Error content
+#+end_error
+
+#+begin_success
+Success content
+#+end_success`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain('<Callout type="warning">');
+    expect(result.markdown).toContain('<Callout type="error">');
+    expect(result.markdown).toContain('<Callout type="success">');
+  });
+
+  it('should handle frontmatter with special characters', async () => {
+    const orgContent = `#+TITLE: Title with "quotes" and 'apostrophes'
+#+DESCRIPTION: Description with special chars: @#$%^&*()
+
+Content here.`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.frontmatter).toContain(
+      'title: Title with "quotes" and \'apostrophes\'',
+    );
+    expect(result.frontmatter).toContain(
+      "description: 'Description with special chars: @#$%^&*()'",
+    );
+  });
+
+  it('should handle code blocks with syntax highlighting', async () => {
+    const orgContent = `#+begin_src typescript
+interface User {
+  name: string;
+  age: number;
+}
+#+end_src
+
+#+begin_src python
+def hello():
+    print("Hello, World!")
+#+end_src`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain('```typescript');
+    expect(result.markdown).toContain('interface User');
+    expect(result.markdown).toContain('```python');
+    expect(result.markdown).toContain('def hello():');
+  });
 });

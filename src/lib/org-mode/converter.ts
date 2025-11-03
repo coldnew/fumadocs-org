@@ -68,6 +68,9 @@ export async function convertOrgToMdx(
       options.defaultDescription || 'Generated from Org-mode';
   }
 
+  // For now, keep the HTML-based approach for callouts
+  // TODO: Implement full AST-based conversion
+
   // Convert to HTML first
   let html = unified()
     .use(parse)
@@ -76,8 +79,6 @@ export async function convertOrgToMdx(
     .use(require('rehype-stringify').default)
     .processSync(orgContent)
     .toString();
-
-  // Math spans are left as-is for rehype-remark to handle
 
   // Convert HTML with LaTeX to markdown
   let markdown = unified()
