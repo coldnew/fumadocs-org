@@ -28,27 +28,27 @@ export async function convertOrgToMdx(
     keywords.description = options.defaultDescription || 'Generated from Org-mode';
   }
 
-  // Convert to HTML first
-  let html = unified()
-    .use(parse)
-    .use(uniorg2rehype)
-    .use(require('rehype-stringify').default)
-    .processSync(orgContent)
-    .toString();
+   // Convert to HTML first
+   let html = unified()
+     .use(parse)
+     .use(uniorg2rehype)
+     .use(require('rehype-stringify').default)
+     .processSync(orgContent)
+     .toString();
 
-  // Replace math spans with LaTeX in HTML
-  html = html
-    .replace(/<span class="math math-inline">([^<]+)<\/span>/g, '$$$1$$')
-    .replace(/<span class="math math-display">([^<]+)<\/span>/g, '\n\n$$$$$1$$$$\n\n');
+   // Replace math spans with LaTeX in HTML
+   html = html
+     .replace(/<span class="math math-inline">([^<]+)<\/span>/g, '$$$1$$')
+     .replace(/<span class="math math-display">([^<]+)<\/span>/g, '\n\n$$$$$1$$$$\n\n');
 
-  // Convert HTML with LaTeX to markdown
-  const markdown = unified()
-    .use(rehypeParse)
-    .use(rehypeRemark)
-    .use(remarkGfm)
-    .use(remarkStringify)
-    .processSync(html)
-    .toString();
+   // Convert HTML with LaTeX to markdown
+   const markdown = unified()
+     .use(rehypeParse)
+     .use(rehypeRemark)
+     .use(remarkGfm)
+     .use(remarkStringify)
+     .processSync(html)
+     .toString();
 
   // Generate frontmatter
   const frontmatter = matter.stringify('', keywords);

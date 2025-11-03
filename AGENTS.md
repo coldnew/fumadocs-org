@@ -32,3 +32,11 @@
 - **New Tasks**: Always confirm with the user before creating a new task file in the tasks/ folder
 - **Task Numbering**: If creating a new task, use sequential numbering (e.g., 0002-xxx.md after 0001-xxx.md)
 - **Task Creation**: Only create task files when explicitly approved by the user
+
+## Testing
+
+- **Framework**: Vitest with UI support
+- **Test Scripts**: `npm run test` (watch mode), `npm run test:ui` (UI mode), `npm run test:run` (single run)
+- **Test Location**: Unit tests in `src/**/*.test.ts`
+- **Coverage**: Aim for high coverage on critical functions
+- **Mocking**: Use Vitest's mocking capabilities for external dependencies
