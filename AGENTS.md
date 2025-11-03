@@ -34,6 +34,7 @@
 - **Task Numbering**: If creating a new task, use sequential numbering (e.g., 0002-xxx.md after 0001-xxx.md)
 - **Task Creation**: Only create task files when explicitly approved by the user
 - **Task File Access**: Only read task files in the tasks/ folder that have not been committed yet
+- **Task Format**: Use checkbox format (- [ ]) for task items in the Tasks section
 
 ## Testing
 
