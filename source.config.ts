@@ -4,7 +4,7 @@ import rehypeKatex from 'rehype-katex';
 
 // Options: https://fumadocs.vercel.app/docs/mdx/collections#define-docs
 export const docs = defineDocs({
-  dir: 'content/docs',
+  dir: '.cache/docs',
 });
 
 export default defineConfig({
