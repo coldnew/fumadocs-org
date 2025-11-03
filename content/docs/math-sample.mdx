@@ -1,0 +1,153 @@
+---
+title: Complex Org-mode Features Test
+author: Test Author
+date: '2024-11-03'
+description: 'Testing complex Org-mode features including math, code, and tables'
+options: 'toc:t num:t'
+latex_header: '\usepackage{amsmath}'
+---
+
+{/* This file is auto-generated from math-sample.org. Do not edit directly. */}
+
+# Introduction
+
+This document tests various Org-mode features to ensure proper conversion to MDX.
+
+# Mathematical Formulas
+
+## Inline Math
+
+The quadratic formula is $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$.
+
+## Display Math
+
+The Pythagorean theorem states: $\sqrt{a^2 + b^2} = c$
+
+## Complex Equations
+
+Einstein's famous equation: $E = mc^2$
+
+And Maxwell's equations: $\nabla \cdot \mathbf{E} = \frac{\rho}{\varepsilon\_0}$ $\nabla \cdot \mathbf{B} = 0$ $\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}$ $\nabla \times \mathbf{B} = \mu\_0\mathbf{J} + \mu\_0\varepsilon\_0\frac{\partial \mathbf{E}}{\partial t}$
+
+# Code Blocks
+
+## JavaScript Example
+
+```javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10)); // 55
+```
+
+## Python Example
+
+```python
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))
+```
+
+# Tables
+
+## Simple Table
+
+| Name    | Age | Occupation |
+| ------- | --- | ---------- |
+| Alice   | 25  | Engineer   |
+| Bob     | 30  | Designer   |
+| Charlie | 35  | Manager    |
+
+## Table with Formulas
+
+| Item     | Quantity | Price | Total  |
+| -------- | -------- | ----- | ------ |
+| Widget A | 10       | 5.50  | 55.00  |
+| Widget B | 25       | 3.25  | 81.25  |
+| Widget C | 5        | 12.00 | 60.00  |
+| Total    |          |       | 196.25 |
+
+# Lists and Checkboxes
+
+## Unordered Lists
+
+* Mathematics
+
+  * Algebra
+  * Calculus
+  * Geometry
+
+* Programming
+
+  * JavaScript
+  * Python
+  * TypeScript
+
+## Ordered Lists
+
+1. First step
+2. Second step
+3. Third step
+
+## Checkboxes
+
+* Install dependencies
+* Set up project structure
+* Write documentation
+* Test functionality
+
+# Properties and Drawers
+
+## Task with Properties   task
+
+This is a high-priority task that requires 2 hours of effort.
+
+## Drawer Example
+
+# Links and References
+
+## External Links
+
+Visit [Org-mode website](https://orgmode.org) for more information.
+
+## Internal Links
+
+See [Introduction](Introduction) for an overview.
+
+# Export Settings
+
+# Footnotes
+
+This is a sentence with a footnote[1](#fn.1).
+
+# Special Characters
+
+* En dash: --
+* Em dash: ---
+* Ellipsis: ...
+* Arrows: -> <- `> <`
+
+# DONE Final Test
+
+* Math formulas
+* Code blocks
+* Tables
+* Lists
+* Properties
+* Links
+* Footnotes
+
+# Footnotes:
+
+[1](#fnr.1)
+
+This is the footnote content.
