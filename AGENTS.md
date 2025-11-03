@@ -40,3 +40,4 @@
 - **Test Location**: Unit tests in `src/**/*.test.ts`
 - **Coverage**: Aim for high coverage on critical functions
 - **Mocking**: Use Vitest's mocking capabilities for external dependencies
+- **Workflow**: Run `npm run test:run` after every code modification to ensure all unit tests pass
