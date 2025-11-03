@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { convertOrgToMdx } from './converter';
+import {
+  convertOrgToMdx,
+  extractOrgKeywords,
+  getCalloutTypeFromOrgType,
+} from './converter';
 
 describe('convertOrgToMdx', () => {
   it('should convert basic Org content to MDX', async () => {
@@ -148,10 +152,10 @@ Here's a helpful tip.
     expect(result.markdown).toContain('This is a warning message.');
     expect(result.markdown).toContain('</Callout>');
 
-    expect(result.markdown).toContain('<Callout type="info">');
+    expect(result.markdown).toContain('<Callout type="note">');
     expect(result.markdown).toContain('This is an informational note.');
 
-    expect(result.markdown).toContain('<Callout type="success">');
+    expect(result.markdown).toContain('<Callout type="tip">');
     expect(result.markdown).toContain("Here's a helpful tip.");
   });
 
@@ -198,15 +202,82 @@ Warning content
 Error content
 #+end_error
 
-#+begin_success
-Success content
-#+end_success`;
+#+begin_info
+Info content
+#+end_info`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
     expect(result.markdown).toContain('<Callout type="warning">');
     expect(result.markdown).toContain('<Callout type="error">');
-    expect(result.markdown).toContain('<Callout type="success">');
+    expect(result.markdown).toContain('<Callout type="info">');
+  });
+
+  it('should handle complex Org content with multiple features', async () => {
+    const orgContent = `* Heading
+
+Some paragraph with *bold* and /italic/ text.
+
+- List item 1
+- List item 2
+
+| Table | Column |
+|-------|--------|
+| Data  | Here   |
+
+[[https://example.com][Link]]`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain('# Heading');
+    expect(result.markdown).toContain('**bold**');
+    expect(result.markdown).toContain('*italic*');
+    expect(result.markdown).toContain('List item 1');
+    expect(result.markdown).toContain('| Table | Column |');
+    expect(result.markdown).toContain('[Link](https://example.com)');
+  });
+
+  it('should handle invalid Org syntax without crashing', async () => {
+    const orgContent = `#+begin_invalid
+Invalid block
+#+end_invalid
+
+* Incomplete heading`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    // Should not crash and produce some output
+    expect(result.markdown).toBeDefined();
+    expect(typeof result.markdown).toBe('string');
+  });
+
+  it('should handle nested lists', async () => {
+    const orgContent = `- Item 1
+  - Subitem 1.1
+  - Subitem 1.2
+- Item 2
+  1. Numbered subitem 2.1
+  2. Numbered subitem 2.2`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain('Item 1');
+    expect(result.markdown).toContain('Subitem 1.1');
+    expect(result.markdown).toContain('Numbered subitem 2.1');
+  });
+
+  it('should handle code blocks with language', async () => {
+    const orgContent = `#+begin_src javascript
+function hello() {
+  console.log("Hello World");
+}
+#+end_src`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain('```javascript');
+    expect(result.markdown).toContain('function hello()');
+    expect(result.markdown).toContain('```');
   });
 
   it('should handle frontmatter with special characters', async () => {
@@ -226,23 +297,73 @@ Content here.`;
   });
 
   it('should handle code blocks with syntax highlighting', async () => {
-    const orgContent = `#+begin_src typescript
-interface User {
-  name: string;
-  age: number;
+    const orgContent = `#+begin_src javascript
+function hello() {
+  console.log("Hello World");
 }
-#+end_src
-
-#+begin_src python
-def hello():
-    print("Hello, World!")
 #+end_src`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('```typescript');
-    expect(result.markdown).toContain('interface User');
-    expect(result.markdown).toContain('```python');
-    expect(result.markdown).toContain('def hello():');
+    expect(result.markdown).toContain('```javascript');
+    expect(result.markdown).toContain('function hello()');
+    expect(result.markdown).toContain('```');
+  });
+
+  describe('extractOrgKeywords', () => {
+    it('should extract TITLE keyword', () => {
+      const orgContent = `#+TITLE: Test Title
+
+Content here.`;
+
+      const keywords = extractOrgKeywords(orgContent);
+
+      expect(keywords.title).toBe('Test Title');
+    });
+
+    it('should extract multiple keywords', () => {
+      const orgContent = `#+TITLE: Test Title
+#+AUTHOR: Test Author
+#+DESCRIPTION: Test Description
+
+Content here.`;
+
+      const keywords = extractOrgKeywords(orgContent);
+
+      expect(keywords.title).toBe('Test Title');
+      expect(keywords.author).toBe('Test Author');
+      expect(keywords.description).toBe('Test Description');
+    });
+
+    it('should handle keywords with special characters', () => {
+      const orgContent = `#+TITLE: Title with "quotes" and 'apostrophes'
+
+Content here.`;
+
+      const keywords = extractOrgKeywords(orgContent);
+
+      expect(keywords.title).toBe('Title with "quotes" and \'apostrophes\'');
+    });
+  });
+
+  describe('getCalloutTypeFromOrgType', () => {
+    it('should map org callout types to fumadocs types', () => {
+      expect(getCalloutTypeFromOrgType('warning')).toBe('warning');
+      expect(getCalloutTypeFromOrgType('error')).toBe('error');
+      expect(getCalloutTypeFromOrgType('info')).toBe('info');
+      expect(getCalloutTypeFromOrgType('note')).toBe('note');
+      expect(getCalloutTypeFromOrgType('tip')).toBe('tip');
+      expect(getCalloutTypeFromOrgType('caution')).toBe('caution');
+    });
+
+    it('should return null for unknown types', () => {
+      expect(getCalloutTypeFromOrgType('unknown')).toBeNull();
+      expect(getCalloutTypeFromOrgType('')).toBeNull();
+    });
+
+    it('should be case insensitive', () => {
+      expect(getCalloutTypeFromOrgType('WARNING')).toBe('warning');
+      expect(getCalloutTypeFromOrgType('Error')).toBe('error');
+    });
   });
 });

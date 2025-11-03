@@ -7,7 +7,7 @@ import remarkStringify from 'remark-stringify';
 import { visit } from 'unist-util-visit';
 import matter from 'gray-matter';
 import type { ConversionOptions, ConversionResult } from './types';
-import { extractOrgKeywords, generateDefaultTitle } from './utils';
+import { generateDefaultTitle } from './utils';
 
 // Global variables for passing data between plugins
 let globalTableAlignments: any[] = [];
@@ -16,14 +16,31 @@ let globalCaptions: any[] = [];
 /**
  * Get Fumadocs callout type from Org-mode callout type
  */
-function getCalloutTypeFromOrgType(orgType: string): string | null {
+export function extractOrgKeywords(content: string): Record<string, string> {
+  const keywordRegex = /^#\+(\w+):\s*(.+)$/gm;
+  const keywords: Record<string, string> = {};
+  let match;
+
+  while ((match = keywordRegex.exec(content)) !== null) {
+    const key = match[1].toLowerCase();
+    const value = match[2].trim();
+    // Skip options, latex_header, and date as they may cause issues
+    if (key !== 'options' && key !== 'latex_header' && key !== 'date') {
+      keywords[key] = value;
+    }
+  }
+
+  return keywords;
+}
+
+export function getCalloutTypeFromOrgType(orgType: string): string | null {
   const calloutMap: Record<string, string> = {
     warning: 'warning',
-    note: 'info',
-    tip: 'success',
-    info: 'info',
-    success: 'success',
     error: 'error',
+    info: 'info',
+    note: 'note',
+    tip: 'tip',
+    caution: 'caution',
   };
 
   return calloutMap[orgType.toLowerCase()] || null;
