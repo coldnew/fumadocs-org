@@ -1,4 +1,4 @@
-* Sample Org-mode Document
+#+TITLE: Sample Org-mode Document
 
 This is a sample document to test Org-mode support in Fumadocs.
 

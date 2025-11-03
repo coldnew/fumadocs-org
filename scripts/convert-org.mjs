@@ -20,6 +20,10 @@ for (const orgFile of orgFiles) {
   // Read org content
   const orgContent = fs.readFileSync(orgPath, 'utf8');
 
+  // Extract TITLE from org content
+  const titleMatch = orgContent.match(/^#\+TITLE:\s*(.+)$/m);
+  const title = titleMatch ? titleMatch[1].trim() : path.basename(orgFile, '.org').replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
   // Convert to markdown
   const markdown = unified()
     .use(parse)
@@ -31,7 +35,6 @@ for (const orgFile of orgFiles) {
     .toString();
 
   // Generate frontmatter
-  const title = path.basename(orgFile, '.org').replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   const frontmatter = `---\ntitle: ${title}\ndescription: Generated from Org-mode\n---\n\n`;
 
   // Add generated comment as MDX comment

@@ -13,13 +13,14 @@ Add a comment at the top of .mdx files generated from Org-mode sources to indica
 ### 1. Update Conversion Script
 Create or modify a conversion script that:
 - Reads .org files from content/docs/
+- Extracts TITLE from #+TITLE: keyword for accurate frontmatter
 - Converts them to .mdx using uniorg pipeline
-- Adds a comment header to generated .mdx files
+- Adds a MDX comment header to generated .mdx files
 
 ### 2. Comment Format
-Add at the top of generated .mdx files:
-```markdown
-<!-- This file is auto-generated from [source.org]. Do not edit directly. -->
+Add after frontmatter in generated .mdx files:
+```jsx
+{/* This file is auto-generated from [source.org]. Do not edit directly. */}
 ```
 
 ### 3. Integration with Build Process
@@ -28,7 +29,7 @@ Add at the top of generated .mdx files:
 - Update package.json scripts if needed
 
 ### 4. Update Existing Sample
-Modify content/docs/sample.mdx to include the generated comment
+Modify content/docs/sample.mdx to include the generated comment and correct title
 
 ### 5. Documentation
 Update README or docs to explain the Org-mode workflow
