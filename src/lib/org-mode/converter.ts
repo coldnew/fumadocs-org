@@ -4,7 +4,6 @@ import uniorg2rehype from 'uniorg-rehype';
 import rehype2remark from 'rehype-remark';
 import remarkGfm from 'remark-gfm';
 import remarkStringify from 'remark-stringify';
-import rehypeStringify from 'rehype-stringify';
 import { visit } from 'unist-util-visit';
 import matter from 'gray-matter';
 import type { ConversionOptions, ConversionResult } from './types';
@@ -28,6 +27,35 @@ function getCalloutTypeFromOrgType(orgType: string): string | null {
   };
 
   return calloutMap[orgType.toLowerCase()] || null;
+}
+
+/**
+ * Convert AST nodes to markdown string
+ */
+function astToMarkdown(nodes: any[]): string {
+  return nodes
+    .map((node) => {
+      if (node.type === 'text') {
+        // Convert Org formatting to Markdown
+        let text = node.value;
+        // Convert Org bold *text* to **text**
+        text = text.replace(/\*([^*]+)\*/g, '**$1**');
+        // Convert Org italic /text/ to *text*
+        text = text.replace(/\/([^/]+)\//g, '*$1*');
+        return text;
+      }
+      if (node.type === 'bold')
+        return `**${astToMarkdown(node.children || [])}**`;
+      if (node.type === 'italic')
+        return `*${astToMarkdown(node.children || [])}*`;
+      if (node.type === 'code') return `\`${node.value}\``;
+      if (node.type === 'verbatim') return `\`${node.value}\``;
+      if (node.type === 'paragraph') return astToMarkdown(node.children || []);
+      if (node.type === 'newline') return '\n';
+      // Add more node types as needed
+      return '';
+    })
+    .join('');
 }
 
 /**
@@ -159,77 +187,6 @@ function convertFiguresToHtml() {
           value: html,
         };
         parent.children[index] = htmlNode;
-      }
-    });
-  };
-}
-
-/**
- * Plugin to process math in subtree
- */
-function processMathInSubtree() {
-  return (tree: any) => {
-    visit(tree, 'element', (element: any, index?: number, parent?: any) => {
-      if (
-        (element.tagName === 'code' || element.tagName === 'span') &&
-        element.properties?.className?.includes('math') &&
-        index !== undefined &&
-        parent
-      ) {
-        const className = element.properties.className;
-        const isInline = Array.isArray(className)
-          ? className.includes('math-inline')
-          : className.includes('math-inline');
-        let mathContent = element.children?.[0]?.value || '';
-        mathContent = mathContent.trim().replace(/^\$+|\$+$/g, '');
-        if (isInline) {
-          parent.children[index] = {
-            type: 'text',
-            value: `$${mathContent}$`,
-          };
-        } else {
-          parent.children[index] = {
-            type: 'text',
-            value: `$$\n${mathContent}\n$$`,
-          };
-        }
-      }
-    });
-  };
-}
-
-/**
- * Plugin to handle callouts in rehype stage
- */
-function rehypeCallouts() {
-  return (tree: any) => {
-    visit(tree, 'element', (element: any, index?: number, parent?: any) => {
-      if (element.tagName === 'div' && element.properties?.className) {
-        const className = Array.isArray(element.properties.className)
-          ? element.properties.className.join(' ')
-          : element.properties.className;
-        const blockMatch = className.match(/block-(\w+)/);
-        if (blockMatch) {
-          const blockType = blockMatch[1];
-          const calloutType = getCalloutTypeFromOrgType(blockType);
-          if (calloutType && index !== undefined && parent) {
-            // Create subtree with children
-            const subtree = { type: 'root', children: element.children } as any;
-            // Convert to mdast
-            const mdastTree = unified().use(rehype2remark).runSync(subtree);
-            // Convert to markdown string
-            const markdownContent = unified()
-              .use(remarkStringify, { escape: null } as any)
-              .stringify(mdastTree)
-              .trim()
-              .replace(/\\\*/g, '*'); // Unescape * since they are markers
-            // Replace with raw HTML
-            parent.children[index] = {
-              type: 'raw',
-              value: `<Callout type="${calloutType}">\n${markdownContent}\n</Callout>`,
-            };
-          }
-        }
       }
     });
   };
@@ -395,13 +352,33 @@ export async function convertOrgToMdx(
       options.defaultDescription || 'Generated from Org-mode';
   }
 
+  // Extract callouts for separate processing
+  const callouts: Array<{ type: string; content: string; index: number }> = [];
+  let calloutIndex = 0;
+  orgContent = orgContent.replace(
+    /#\+begin_(\w+)\s*\n([\s\S]*?)#\+end_\1/g,
+    (match: string, type: string, content: string) => {
+      const calloutType = getCalloutTypeFromOrgType(type);
+      if (calloutType) {
+        callouts.push({
+          type: calloutType,
+          content: content.trim(),
+          index: calloutIndex,
+        });
+        const placeholder = `CALLOUTMARKER${calloutIndex}`;
+        calloutIndex++;
+        return placeholder;
+      }
+      return match;
+    },
+  );
+
   // Convert using direct AST pipeline (inspired by org2mdx)
-  let processor: any = (unified() as any)
+  const processor = unified()
     .use(parse)
     .use(orgCaptions)
     .use(orgTableAlignment)
     .use(uniorg2rehype)
-    .use(rehypeCallouts)
     .use(rehypeCaptionsAndTableAlignment)
     .use(convertFiguresToHtml)
     .use(rehype2remark)
@@ -410,6 +387,24 @@ export async function convertOrgToMdx(
 
   const file = processor.processSync(orgContent);
   let markdown = String(file).trim();
+
+  // Process and restore callouts
+  for (const callout of callouts) {
+    // Process callout content separately
+    const calloutMarkdown = processor
+      .processSync(callout.content)
+      .toString()
+      .trim();
+    // Replace marker with Callout component
+    const marker = `CALLOUTMARKER${callout.index}`;
+    markdown = markdown.replace(
+      marker,
+      `<Callout type="${callout.type}">\n${calloutMarkdown}\n</Callout>`,
+    );
+  }
+
+  // Unescape HTML tags in html nodes
+  markdown = markdown.replace(/\\</g, '<').replace(/\\>/g, '>');
 
   // Generate frontmatter
   const frontmatter = matter.stringify('', keywords);

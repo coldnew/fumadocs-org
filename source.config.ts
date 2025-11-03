@@ -1,4 +1,7 @@
-import { defineConfig, defineCollections } from 'fumadocs-mdx/config';
+import {
+  defineConfig,
+  defineCollections,
+} from 'fumadocs-mdx/config';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
