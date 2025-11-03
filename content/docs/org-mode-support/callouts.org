@@ -1,0 +1,61 @@
+#+TITLE: Callouts in Org-mode
+#+AUTHOR: Demo
+#+DATE: 2024-11-03
+#+DESCRIPTION: Demonstration of callouts in Org-mode
+
+* Callouts
+
+Org-mode supports callouts like warnings, notes, and tips for highlighting important information.
+
+** Syntax Example
+
+#+begin_src text
+  ,#+begin_warning
+  This is a warning message with *bold* text and a $math$ formula.
+  ,#+end_warning
+
+  ,#+begin_note
+  This is an informational note.
+  ,#+end_note
+
+  ,#+begin_tip
+  Here's a helpful tip for users.
+  ,#+end_tip
+#+end_src
+
+** Conversion to MDX
+ 
+The Org-mode callouts are converted to Fumadocs Callout components, above code will convert to
+
+
+#+begin_src text
+<Callout type="warning">
+  This is a warning message with **bold** text and a $math$ formula.
+</Callout>
+
+<Callout type="note">
+  This is an informational note.
+</Callout>
+
+<Callout type="tip">
+  Here's a helpful tip for users.
+</Callout>
+#+end_src
+
+This allows the callouts to be rendered with appropriate styling in the Fumadocs UI.
+
+** Demonstration
+
+The above generated MDX source will be render like:
+
+#+begin_warning
+This is a warning message with *bold* text and a $math$ formula.
+#+end_warning
+
+#+begin_note
+This is an informational note.
+#+end_note
+
+#+begin_tip
+Here's a helpful tip for users.
+#+end_tip

@@ -1,0 +1,96 @@
+#+TITLE: Lists and Checkboxes in Org-mode
+#+AUTHOR: Demo
+#+DATE: 2024-11-03
+#+DESCRIPTION: Demonstration of lists and checkboxes in Org-mode
+
+* Lists and Checkboxes
+
+Org-mode supports unordered and ordered lists, as well as checkboxes for tasks.
+
+** Syntax Example
+
+#+begin_src text
+** Unordered Lists
+
+- Mathematics
+  - Algebra
+  - Calculus
+  - Geometry
+- Programming
+  - JavaScript
+  - Python
+  - TypeScript
+
+** Ordered Lists
+
+1. First step
+2. Second step
+3. Third step
+
+** Checkboxes
+
+- [X] Install dependencies
+- [X] Set up project structure
+- [ ] Write documentation
+- [ ] Test functionality
+#+end_src
+
+** Conversion to MDX
+
+Org-mode lists are converted to Markdown lists, above code will convert to
+
+#+begin_src text
+## Unordered Lists
+
+* Mathematics
+  * Algebra
+  * Calculus
+  * Geometry
+* Programming
+  * JavaScript
+  * Python
+  * TypeScript
+
+## Ordered Lists
+
+1. First step
+2. Second step
+3. Third step
+
+## Checkboxes
+
+* [X] Install dependencies
+* [X] Set up project structure
+* [ ] Write documentation
+* [ ] Test functionality
+#+end_src
+
+This allows lists to be rendered with appropriate styling in the Fumadocs UI.
+
+** Demonstration
+
+The above generated MDX source will be render like:
+
+** Unordered Lists
+
+- Mathematics
+  - Algebra
+  - Calculus
+  - Geometry
+- Programming
+  - JavaScript
+  - Python
+  - TypeScript
+
+** Ordered Lists
+
+1. First step
+2. Second step
+3. Third step
+
+** Checkboxes
+
+- [X] Install dependencies
+- [X] Set up project structure
+- [ ] Write documentation
+- [ ] Test functionality

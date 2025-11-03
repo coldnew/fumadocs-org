@@ -1,0 +1,48 @@
+#+TITLE: Links and References in Org-mode
+#+AUTHOR: Demo
+#+DATE: 2024-11-03
+#+DESCRIPTION: Demonstration of links and references in Org-mode
+
+* Links and References
+
+Org-mode supports external and internal links for navigation.
+
+** Syntax Example
+
+#+begin_src text
+** External Links
+
+Visit [[https://orgmode.org][Org-mode website]] for more information.
+
+** Internal Links
+
+See [[Introduction]] for an overview.
+#+end_src
+
+** Conversion to MDX
+
+Org-mode links are converted to Markdown links, above code will convert to
+
+#+begin_src text
+## External Links
+
+Visit [Org-mode website](https://orgmode.org) for more information.
+
+## Internal Links
+
+See [Introduction](Introduction) for an overview.
+#+end_src
+
+This allows links to be rendered with appropriate styling in the Fumadocs UI.
+
+** Demonstration
+
+The above generated MDX source will be render like:
+
+** External Links
+
+Visit [[https://orgmode.org][Org-mode website]] for more information.
+
+** Internal Links
+
+See [[Introduction]] for an overview.

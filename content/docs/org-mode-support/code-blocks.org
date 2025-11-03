@@ -1,0 +1,96 @@
+#+TITLE: Code Blocks in Org-mode
+#+AUTHOR: Demo
+#+DATE: 2024-11-03
+#+DESCRIPTION: Demonstration of code blocks in Org-mode
+
+* Code Blocks
+
+Org-mode supports syntax-highlighted code blocks in various programming languages.
+
+** Syntax Example
+
+#+begin_src text
+#+begin_src javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+console.log(fibonacci(10));
+#+end_src
+
+#+begin_src python
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))
+#+end_src
+#+end_src
+
+** Conversion to MDX
+
+Org-mode code blocks are converted to standard Markdown code blocks, above code will convert to
+
+#+begin_src text
+## JavaScript Example
+
+```javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10)); // 55
+```
+
+## Python Example
+
+```python
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))
+```
+#+end_src
+
+This allows code blocks to be rendered with syntax highlighting in the Fumadocs UI.
+
+** Demonstration
+
+The above generated MDX source will be render like:
+
+** JavaScript Example
+
+#+begin_src javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10)); // 55
+#+end_src
+
+** Python Example
+
+#+begin_src python
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))
+#+end_src
