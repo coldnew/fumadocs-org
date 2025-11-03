@@ -44,3 +44,7 @@
 - **Mocking**: Use Vitest's mocking capabilities for external dependencies
 - **Workflow**: Run `npm run test:run` after every code modification to ensure all unit tests pass
 - **New Features**: Always consider adding unit tests for new code modifications and features
+
+## Project Goals
+
+- **MDX First**: Regardless of input formats like org-mode or others, the ultimate goal is to generate MDX that this project can use
