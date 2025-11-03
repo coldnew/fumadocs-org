@@ -26,5 +26,5 @@ export function extractOrgKeywords(content: string): OrgKeywords {
 export function generateDefaultTitle(filename: string): string {
   return filename
     .replace(/[-_]/g, ' ')
-    .replace(/\b\w/g, l => l.toUpperCase());
+    .replace(/\b\w/g, (l) => l.toUpperCase());
 }

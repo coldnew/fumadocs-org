@@ -17,7 +17,10 @@ async function main() {
     const orgContent = fs.readFileSync(orgPath, 'utf8');
 
     // Convert using the library
-    const result = await convertOrgToMdx(orgContent, path.basename(orgFile, '.org'));
+    const result = await convertOrgToMdx(
+      orgContent,
+      path.basename(orgFile, '.org'),
+    );
 
     // Add generated comment
     const comment = `{/* This file is auto-generated from ${orgFile}. Do not edit directly. */}\n\n`;

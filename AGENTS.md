@@ -25,6 +25,7 @@
 ## Git Conventions
 
 - **Commits**: Use Conventional Commits format (e.g., `feat: add new feature`, `fix: resolve bug`)
+- **Pre-commit Checks**: Run `npm run format` before committing to ensure code style consistency
 - **Commit Policy**: Do not proactively git commit unless explicitly instructed by the user
 
 ## Task Management

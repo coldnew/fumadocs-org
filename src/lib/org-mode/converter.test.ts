@@ -52,64 +52,64 @@ Content under headings.`;
     expect(result.markdown).toContain('### Level 3');
   });
 
-   it('should convert Org lists to Markdown', async () => {
-     const orgContent = `- Item 1
+  it('should convert Org lists to Markdown', async () => {
+    const orgContent = `- Item 1
 - Item 2
   - Nested item
 
 1. Numbered item 1
 2. Numbered item 2`;
 
-     const result = await convertOrgToMdx(orgContent, 'test');
+    const result = await convertOrgToMdx(orgContent, 'test');
 
-     expect(result.markdown).toContain('* Item 1');
-     expect(result.markdown).toContain('* Item 2');
-     expect(result.markdown).toContain('  * Nested item');
-     // Note: Ordered lists are converted as unordered due to uniorg limitation
-     expect(result.markdown).toContain('* Numbered item 1');
-   });
+    expect(result.markdown).toContain('* Item 1');
+    expect(result.markdown).toContain('* Item 2');
+    expect(result.markdown).toContain('  * Nested item');
+    // Note: Ordered lists are converted as unordered due to uniorg limitation
+    expect(result.markdown).toContain('* Numbered item 1');
+  });
 
-   it('should preserve code blocks', async () => {
-     const orgContent = `#+begin_src javascript
+  it('should preserve code blocks', async () => {
+    const orgContent = `#+begin_src javascript
 console.log('hello');
 #+end_src`;
 
-     const result = await convertOrgToMdx(orgContent, 'test');
+    const result = await convertOrgToMdx(orgContent, 'test');
 
-     expect(result.markdown).toContain('```javascript');
-     expect(result.markdown).toContain("console.log('hello');");
-     expect(result.markdown).toContain('```');
-   });
+    expect(result.markdown).toContain('```javascript');
+    expect(result.markdown).toContain("console.log('hello');");
+    expect(result.markdown).toContain('```');
+  });
 
-   it('should convert Org tables to Markdown', async () => {
-     const orgContent = `| Name    | Age | Occupation  |
+  it('should convert Org tables to Markdown', async () => {
+    const orgContent = `| Name    | Age | Occupation  |
 |---------+-----+-------------|
 | Alice   |  25 | Engineer    |
 | Bob     |  30 | Designer    |`;
 
-     const result = await convertOrgToMdx(orgContent, 'test');
+    const result = await convertOrgToMdx(orgContent, 'test');
 
-     expect(result.markdown).toContain('| Name  | Age | Occupation |');
-     expect(result.markdown).toContain('| ----- | --- | ---------- |');
-     expect(result.markdown).toContain('| Alice | 25  | Engineer   |');
-     expect(result.markdown).toContain('| Bob   | 30  | Designer   |');
-   });
+    expect(result.markdown).toContain('| Name  | Age | Occupation |');
+    expect(result.markdown).toContain('| ----- | --- | ---------- |');
+    expect(result.markdown).toContain('| Alice | 25  | Engineer   |');
+    expect(result.markdown).toContain('| Bob   | 30  | Designer   |');
+  });
 
-   it('should convert links', async () => {
-     const orgContent = `Visit [[https://example.com][Example Site]] for more info.`;
+  it('should convert links', async () => {
+    const orgContent = `Visit [[https://example.com][Example Site]] for more info.`;
 
-     const result = await convertOrgToMdx(orgContent, 'test');
+    const result = await convertOrgToMdx(orgContent, 'test');
 
-     expect(result.markdown).toContain('[Example Site](https://example.com)');
-   });
+    expect(result.markdown).toContain('[Example Site](https://example.com)');
+  });
 
-   it('should handle TODO keywords', async () => {
-     const orgContent = `* DONE Completed task
+  it('should handle TODO keywords', async () => {
+    const orgContent = `* DONE Completed task
 * TODO Pending task`;
 
-     const result = await convertOrgToMdx(orgContent, 'test');
+    const result = await convertOrgToMdx(orgContent, 'test');
 
-     expect(result.markdown).toContain('# DONE Completed task');
-     expect(result.markdown).toContain('# TODO Pending task');
-   });
- });
+    expect(result.markdown).toContain('# DONE Completed task');
+    expect(result.markdown).toContain('# TODO Pending task');
+  });
+});
