@@ -37,6 +37,10 @@
 - **Task Format**: Use checkbox format (- [ ]) for task items in the Tasks section
 - **Pre-commit Review**: Before committing implementation, re-review whether the task description matches the current implementation. If deciding not to follow the task implementation, report the reason
 
+- **Task Planning**: Before starting any task, present the task plan to the user and wait for approval before proceeding with development
+
+- **Task Completion**: When completing a task, provide a summary of what was done and suggestions for future improvements
+
 ## Testing
 
 - **Framework**: Vitest with UI support
