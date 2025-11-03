@@ -10,20 +10,6 @@ async function main() {
   // Ensure cache directory exists
   fs.mkdirSync(cacheDir, { recursive: true });
 
-  // Copy all manual .mdx files from content/docs to .cache/docs
-  const mdxFiles = globSync('**/*.mdx', { cwd: contentDir });
-  for (const mdxFile of mdxFiles) {
-    const srcPath = path.join(contentDir, mdxFile);
-    const destPath = path.join(cacheDir, mdxFile);
-
-    // Ensure destination directory exists
-    fs.mkdirSync(path.dirname(destPath), { recursive: true });
-
-    // Copy the file
-    fs.copyFileSync(srcPath, destPath);
-    console.log(`Copied ${mdxFile} to .cache/docs/`);
-  }
-
   // Find all .org files
   const orgFiles = globSync('**/*.org', { cwd: contentDir });
 
