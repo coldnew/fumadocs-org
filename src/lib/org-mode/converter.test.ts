@@ -112,4 +112,20 @@ console.log('hello');
     expect(result.markdown).toContain('# DONE Completed task');
     expect(result.markdown).toContain('# TODO Pending task');
   });
+
+  it('should convert Org math expressions to LaTeX', async () => {
+    const orgContent = `Inline math: $E = mc^2$
+
+Display math:
+$$\int_0^1 f(x) \, dx$$
+
+Complex formula:
+$$\lim_{x \to 0} \frac{\sin x}{x} = 1$$`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain('$$E = mc^2$$');
+    expect(result.markdown).toContain('$$int\\_0^1 f(x)');
+    expect(result.markdown).toContain('$$lim\\_{x');
+  });
 });

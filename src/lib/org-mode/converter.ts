@@ -38,11 +38,15 @@ export async function convertOrgToMdx(
     .toString();
 
   // Replace math spans with LaTeX in HTML
+  // Since uniorg marks all math as math-inline, use $$ for all math expressions
   html = html
-    .replace(/<span class="math math-inline">([^<]+)<\/span>/g, '$$$1$$')
+    .replace(
+      /<span class="math math-inline">([^<]+)<\/span>/g,
+      (match, p1) => `$$${p1}$$`,
+    )
     .replace(
       /<span class="math math-display">([^<]+)<\/span>/g,
-      '\n\n$$$$$1$$$$\n\n',
+      (match, p1) => `\n\n$${p1}$$\n\n`,
     );
 
   // Convert HTML with LaTeX to markdown
