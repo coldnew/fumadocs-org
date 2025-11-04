@@ -28,7 +28,7 @@ Org-mode supports callouts like warnings, notes, and tips for highlighting impor
 The Org-mode callouts are converted to Fumadocs Callout components, above code will convert to
 
 
-#+begin_src text
+#+begin_src mdx
 <Callout type="warning">
   This is a warning message with **bold** text and a $math$ formula.
 </Callout>
