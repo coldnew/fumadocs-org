@@ -133,6 +133,36 @@ Visit [[https://orgmode.org][Org-mode website]] for more information.
 
 See [[Introduction]] for an overview.
 
+* Export Blocks
+
+** HTML Export Block
+
+#+begin_export html
+<div class="alert alert-info">
+  <strong>Note:</strong> This HTML content will be converted to JSX.
+</div>
+#+end_export
+
+** Markdown Export Block
+
+#+begin_export markdown
+### Custom Markdown
+
+This content is exported as-is without processing.
+#+end_export
+
+** Noexport Example
+
+This content before the noexport block will be visible:
+
+#+begin_export html :noexport:
+<div class="hidden">
+  This HTML block will not appear in the exported MDX.
+</div>
+#+end_export
+
+And this content after will also be visible.
+
 * Export Settings
 
 #+OPTIONS: toc:t num:t

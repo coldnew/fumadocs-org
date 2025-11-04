@@ -912,6 +912,71 @@ E = mc^2
 \end{equation}`);
   });
 
+  it('should skip export blocks with :noexport: property', async () => {
+    const orgContent = `Visible content:
+
+#+begin_export markdown
+# This should be visible
+Visible paragraph.
+#+end_export
+
+Hidden content:
+
+#+begin_export markdown :noexport:
+# This should be hidden
+Hidden paragraph.
+#+end_export
+
+More visible content:
+
+#+begin_export latex
+\begin{equation}
+E = mc^2
+\end{equation}
+#+end_export`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`Visible content:
+
+# This should be visible
+Visible paragraph.
+
+Hidden content:
+
+More visible content:
+
+\begin{equation}
+E = mc^2
+\end{equation}`);
+  });
+
+  it('should skip HTML export blocks with :noexport: property', async () => {
+    const orgContent = `Visible HTML:
+
+#+begin_export html
+<div class="visible">This should be visible</div>
+#+end_export
+
+Hidden HTML:
+
+#+begin_export html :noexport:
+<div class="hidden">This should be hidden</div>
+#+end_export
+
+More visible content.`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`Visible HTML:
+
+<div className="visible">This should be visible</div>
+
+Hidden HTML:
+
+More visible content.`);
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title

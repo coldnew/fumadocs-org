@@ -521,8 +521,12 @@ export async function convertOrgToMdx(
   const exportHtmlBlocks: Array<{ html: string; index: number }> = [];
   let exportHtmlIndex = 0;
   orgContent = orgContent.replace(
-    /#\+begin_export html\s*\n([\s\S]*?)#\+end_export/g,
-    (_, html: string) => {
+    /#\+begin_export html(.*)?\s*\n([\s\S]*?)#\+end_export/g,
+    (_, properties: string, html: string) => {
+      // Check for :noexport: property
+      if (properties && properties.trim().includes(':noexport:')) {
+        return ''; // Remove the block entirely
+      }
       exportHtmlBlocks.push({
         html: html.trim(),
         index: exportHtmlIndex,
@@ -538,11 +542,15 @@ export async function convertOrgToMdx(
     [];
   let exportIndex = 0;
   orgContent = orgContent.replace(
-    /#\+begin_export (\w+)\s*\n([\s\S]*?)#\+end_export/g,
-    (_, type: string, content: string) => {
+    /#\+begin_export (\w+)(.*)?\s*\n([\s\S]*?)#\+end_export/g,
+    (_, type: string, properties: string, content: string) => {
       // Skip html type as it needs special JSX conversion
       if (type === 'html') {
         return _;
+      }
+      // Check for :noexport: property
+      if (properties && properties.trim().includes(':noexport:')) {
+        return ''; // Remove the block entirely
       }
       exportBlocks.push({
         content: content.trim(),
