@@ -1,0 +1,73 @@
+#+title: JSX Support in Org-mode
+#+description: Using JSX directly in Org-mode documents
+
+* JSX Support
+
+Org-mode now supports embedding JSX directly using =#+JSX:= (or =#+jsx:=) directives. Unlike HTML blocks that need conversion, JSX blocks contain React-compatible syntax that can be used directly in MDX.
+
+** Basic JSX Usage
+
+You can embed JSX elements using the =#+JSX:= directive:
+
+#+JSX: <button className="btn btn-primary" type="button">Click me</button>
+
+This JSX will be preserved as-is in the exported MDX output.
+
+** JSX Attributes
+
+JSX attributes work exactly as they do in React:
+
+#+JSX: <div className="card" data-testid="my-card" aria-label="Card component">
+  <h3>Card Title</h3>
+  <p>Card content</p>
+</div>
+
+** Conditional Rendering
+
+You can use conditional expressions in JSX:
+
+#+JSX: <div className="notification">
+  {true ? <span className="success">Operation completed</span> : <span className="error">Operation failed</span>}
+</div>
+
+** Complex JSX Structures
+
+For more complex JSX, use proper indentation:
+
+#+JSX: <div className="container">
+  <header className="header">
+    <h1>Welcome</h1>
+  </header>
+  <main className="content">
+    <p>This is the main content area.</p>
+  </main>
+</div>
+
+** Using React Components
+
+You can reference React components that will be available in your MDX context:
+
+#+JSX: <div className="custom-wrapper" style={{ padding: '1rem', border: '1px solid #ccc' }}>
+  <h4>Custom Component Example</h4>
+  <p>This demonstrates JSX structure that could be replaced with actual components.</p>
+</div>
+
+** Best Practices
+
+- Use JSX blocks when you need React-specific features like event handlers or state
+- Ensure JSX syntax is valid - the converter doesn't validate JSX syntax
+- Import any custom components at the top of your MDX files
+- Use proper React naming conventions (camelCase for attributes)
+- Test your JSX in a React environment to ensure it works correctly
+
+** Comparison with HTML Blocks
+
+| Feature | #+HTML: | #+JSX: |
+|---------|---------|--------|
+| Syntax | HTML | JSX |
+| Conversion | HTML → JSX | Direct output |
+| Event handlers | Converted to JSX | Already JSX |
+| Attributes | class → className | Already correct |
+| Use case | Static HTML | Interactive components |
+
+Choose =#+JSX:= when you need React functionality, and =#+HTML:= when you have static HTML that needs conversion.

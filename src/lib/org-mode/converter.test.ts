@@ -765,6 +765,39 @@ Second block:
 <span style={{ color: "red" }}>Red text</span>`);
   });
 
+  it('should convert #+JSX: directives to JSX without transformation', async () => {
+    const orgContent = `#+JSX: <Button variant="primary" onClick={handleClick}>Click me</Button>
+
+Some text in between.
+
+#+JSX: <div className="alert">This is already JSX</div>`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown)
+      .toBe(`<Button variant="primary" onClick={handleClick}>Click me</Button>
+
+Some text in between.
+
+<div className="alert">This is already JSX</div>`);
+  });
+
+  it('should support case-insensitive #+JSX: directives', async () => {
+    const orgContent = `#+jsx: <Component prop="lowercase" />
+
+#+JSX: <Component prop="uppercase" />
+
+#+Jsx: <Component prop="mixed" />`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`<Component prop="lowercase" />
+
+<Component prop="uppercase" />
+
+<Component prop="mixed" />`);
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title

@@ -504,6 +504,19 @@ export async function convertOrgToMdx(
     return placeholder;
   });
 
+  // Extract #+JSX: blocks for separate processing (no conversion needed)
+  const jsxBlocks: Array<{ jsx: string; index: number }> = [];
+  let jsxIndex = 0;
+  orgContent = orgContent.replace(/^#\+jsx:\s*(.+)$/gim, (_, jsx: string) => {
+    jsxBlocks.push({
+      jsx: jsx.trim(),
+      index: jsxIndex,
+    });
+    const placeholder = `JSXMARKER${jsxIndex}`;
+    jsxIndex++;
+    return placeholder;
+  });
+
   // Extract #+begin_export html blocks for separate processing
   const exportHtmlBlocks: Array<{ html: string; index: number }> = [];
   let exportHtmlIndex = 0;
@@ -562,6 +575,12 @@ export async function convertOrgToMdx(
     const jsx = htmlToJsx(exportHtmlBlock.html);
     const marker = `EXPORTHTMLMARKER${exportHtmlBlock.index}`;
     markdown = markdown.replace(marker, jsx);
+  }
+
+  // Restore JSX blocks directly (no conversion needed)
+  for (const jsxBlock of jsxBlocks) {
+    const marker = `JSXMARKER${jsxBlock.index}`;
+    markdown = markdown.replace(marker, jsxBlock.jsx);
   }
 
   // Restore code blocks, converting org code blocks to markdown
