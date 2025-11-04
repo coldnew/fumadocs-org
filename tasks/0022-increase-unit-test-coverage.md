@@ -12,8 +12,11 @@ Improve unit test coverage for the codebase by setting up coverage reporting, an
 - [x] Add unit tests for uncovered functions and edge cases in converter.ts
 - [x] Add tests for error handling and invalid inputs
 - [x] Add tests for complex org-mode features (tables, lists, links, etc.)
+- [x] Add tests for plugins with low coverage (captions.ts)
 - [x] Ensure coverage reaches at least 80% for critical functions
 - [x] Verify all new tests pass
+
+## Status: completed
 
 ## Acceptance Criteria
 

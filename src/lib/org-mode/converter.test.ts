@@ -995,6 +995,17 @@ Hidden HTML:
 More visible content.`);
   });
 
+  it('should convert images with captions to HTML figures', async () => {
+    const orgContent = `#+CAPTION: This is an image caption
+[[./image.png]]`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(
+      `<figure><img src="./image.png" alt="" /><figcaption>This is an image caption</figcaption></figure>`,
+    );
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title
