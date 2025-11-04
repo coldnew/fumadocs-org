@@ -1,25 +1,3 @@
-import type { OrgKeywords } from './types';
-
-/**
- * Extract all Org-mode keywords from content
- */
-export function extractOrgKeywords(content: string): OrgKeywords {
-  const keywordRegex = /^#\+(\w+):\s*(.+)$/gm;
-  const keywords: OrgKeywords = {};
-  let match;
-
-  while ((match = keywordRegex.exec(content)) !== null) {
-    const key = match[1].toLowerCase();
-    const value = match[2].trim();
-    // Skip options, latex_header, and date as they may cause issues
-    if (key !== 'options' && key !== 'latex_header' && key !== 'date') {
-      keywords[key] = value;
-    }
-  }
-
-  return keywords;
-}
-
 /**
  * Generate default title from filename
  */
