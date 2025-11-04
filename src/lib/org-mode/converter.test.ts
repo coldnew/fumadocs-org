@@ -860,6 +860,44 @@ Second JSX block:
 </footer>`);
   });
 
+  it('should handle generic #+begin_export blocks (export as-is)', async () => {
+    const orgContent = `Markdown content:
+
+#+begin_export markdown
+# Exported Markdown
+
+This is **bold** text and *italic* text.
+
+- List item 1
+- List item 2
+#+end_export
+
+LaTeX content:
+
+#+begin_export latex
+\begin{equation}
+E = mc^2
+\end{equation}
+#+end_export`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`Markdown content:
+
+# Exported Markdown
+
+This is **bold** text and *italic* text.
+
+- List item 1
+- List item 2
+
+LaTeX content:
+
+\begin{equation}
+E = mc^2
+\end{equation}`);
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title

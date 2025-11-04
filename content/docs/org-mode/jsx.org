@@ -102,4 +102,18 @@ You can reference React components that will be available in your MDX context:
 | Multi-line | No | No | Yes | Yes |
 | Use case | Static HTML | Interactive components | Complex static HTML | Complex interactive JSX |
 
+** Generic Export Blocks
+
+For other export formats, use generic =#+begin_export <type>= blocks. The content is exported as-is without any processing:
+
+#+begin_export markdown
+# Raw Markdown
+
+This content remains as **markdown** syntax.
+#+end_export
+
+#+begin_export latex
+\[ E = mc^2 \]
+#+end_export
+
 Choose =#+JSX:= when you need React functionality, and =#+HTML:= when you have static HTML that needs conversion.
