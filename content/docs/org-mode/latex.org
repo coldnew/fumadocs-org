@@ -1,0 +1,53 @@
+#+TITLE: LaTeX Blocks in Org-mode
+#+AUTHOR: Demo
+#+DATE: 2024-11-04
+#+DESCRIPTION: Demonstration of LaTeX blocks in Org-mode and their conversion to MDX math blocks
+
+* LaTeX Blocks
+
+Org-mode supports LaTeX blocks for mathematical expressions that get converted to Fumadocs math blocks for proper rendering.
+
+** Syntax Example
+
+#+begin_src text
+#+begin_latex
+E = mc^2
+#+end_latex
+
+#+begin_latex
+\int_a^b f(x)dx
+#+end_latex
+
+#+begin_latex
+T^{\mu\nu}=\begin{pmatrix}
+\varepsilon&0&0&0\\
+0&\varepsilon/3&0&0\\
+0&0&\varepsilon/3&0\\
+0&0&0&\varepsilon/3
+\end{pmatrix}
+#+end_latex
+#+end_src
+
+
+** Demonstration
+
+The above generated MDX source will be render like:
+
+Basic equation: $E = mc^2$
+
+Integral:
+
+#+begin_latex
+\int_a^b f(x)dx
+#+end_latex
+
+Complex formula:
+
+#+begin_latex
+T^{\mu\nu}=\begin{pmatrix}
+\varepsilon&0&0&0\\
+0&\varepsilon/3&0&0\\
+0&0&\varepsilon/3&0\\
+0&0&0&\varepsilon/3
+\end{pmatrix}
+#+end_latex

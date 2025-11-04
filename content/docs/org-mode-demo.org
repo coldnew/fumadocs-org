@@ -18,8 +18,20 @@ Inline math: $E = mc^2$
 Display math:
 $$\int_0^1 f(x) \, dx$$
 
-Complex formula:
+ Complex formula:
 $$\lim_{x \to 0} \frac{\sin x}{x} = 1$$
+
+* LaTeX Blocks
+
+** LaTeX
+
+#+begin_latex
+E = mc^2
+#+end_latex
+
+#+begin_latex
+\int_0^1 f(x) \, dx
+#+end_latex
 
 #+begin_warning
 This is a warning message with *bold* text and a $math$ formula.
@@ -179,6 +191,7 @@ Footnotes are supported in Org-mode.
 * DONE Final Test
 
 - [X] Math formulas
+- [X] LaTeX blocks
 - [X] Code blocks
 - [X] Tables
 - [X] Lists

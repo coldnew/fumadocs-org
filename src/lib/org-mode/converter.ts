@@ -611,6 +611,22 @@ export async function convertOrgToMdx(
     return placeholder;
   });
 
+  // Extract #+begin_latex blocks for separate processing
+  const latexBlocks: Array<{ content: string; index: number }> = [];
+  let latexIndex = 0;
+  orgContent = orgContent.replace(
+    /#\+begin_latex\s*\n([\s\S]*?)#\+end_latex/g,
+    (_, content: string) => {
+      latexBlocks.push({
+        content: content.trim(),
+        index: latexIndex,
+      });
+      const placeholder = `LATEXMARKER${latexIndex}`;
+      latexIndex++;
+      return placeholder;
+    },
+  );
+
   // Extract #+begin_export html blocks for separate processing
   const exportHtmlBlocks: Array<{ html: string; index: number }> = [];
   let exportHtmlIndex = 0;
@@ -708,6 +724,15 @@ export async function convertOrgToMdx(
   for (const jsxBlock of jsxBlocks) {
     const marker = `JSXMARKER${jsxBlock.index}`;
     markdown = markdown.replace(marker, jsxBlock.jsx);
+  }
+
+  // Restore LaTeX blocks as math blocks
+  for (const latexBlock of latexBlocks) {
+    const marker = `LATEXMARKER${latexBlock.index}`;
+    markdown = markdown.replace(
+      marker,
+      `\`\`\`math\n${latexBlock.content}\n\`\`\``,
+    );
   }
 
   // Restore generic export blocks directly (export as-is)

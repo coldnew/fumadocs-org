@@ -400,6 +400,24 @@ function hello() {
 \`\`\``);
   });
 
+  it('should convert latex blocks to math blocks', async () => {
+    const orgContent = `#+begin_latex
+E = mc^2
+#+end_latex`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`\`\`\`math
+E = mc^2
+\`\`\``);
+  });
+
   it('should handle frontmatter with special characters', async () => {
     const orgContent = `#+TITLE: Title with "quotes" and 'apostrophes'
 #+DESCRIPTION: Description with special chars: @#$%^&*()
