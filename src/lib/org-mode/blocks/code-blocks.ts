@@ -165,16 +165,18 @@ export function restoreCodeBlocks(
       } else {
         // Convert org code block to markdown, recursively restoring inner blocks
         let result = original.replace(
-          /#\+begin_src(?:\s+(\w+))?\s*\n([\s\S]*?)#\+end_src/g,
-          (_match: string, blockLang: string, content: string) => {
+          /#\+begin_src(?:[ \t]+(\w+)(.*)?)?[ \t]*\n([\s\S]*?)#\+end_src/g,
+          (
+            _match: string,
+            blockLang: string,
+            _headerArgs: string,
+            content: string,
+          ) => {
             // Restore any markers in content first
             const restoredContent = content.replace(
-              new RegExp(`${MARKERS.CODE_BLOCK}(\\d+)`, 'g'),
-              (_markerMatch: string, markerIndex: string) => {
-                return restoreCodeBlocks(
-                  `${MARKERS.CODE_BLOCK}${markerIndex}`,
-                  context,
-                );
+              /CODEBLOCKMARKER0/g,
+              (_markerMatch: string) => {
+                return restoreCodeBlocks('CODEBLOCKMARKER0', context);
               },
             );
             // Remove leading/trailing newlines but preserve indentation

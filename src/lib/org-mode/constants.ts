@@ -17,13 +17,13 @@ export const MARKERS = {
 // Regex patterns for org-mode parsing
 export const PATTERNS = {
   // Keywords: #+KEY: value
-  KEYWORD: /^#\+(\w+):\s*(.+)$/gm,
+  KEYWORD: /^#\+(\w+):\s*(.*)$/gm,
 
   // Code blocks: #+begin_src lang ... #+end_src
-  CODE_BLOCK: /#\+begin_src(?:\s+(\w+))?\s*\n([\s\S]*?)#\+end_src/g,
+  CODE_BLOCK: /#\+begin_src(?:[ \t]+(\w+)(.*)?)?[ \t]*\n([\s\S]*?)#\+end_src/g,
 
   // LaTeX blocks: #+begin_latex ... #+end_latex
-  LATEX_BLOCK: /#\+begin_latex\s*\n([\s\S]*?)#\+end_latex/g,
+  LATEX_BLOCK: /#\+begin_latex[ \t]*\n([\s\S]*?)#\+end_latex/g,
 
   // HTML blocks: #+HTML: content
   HTML_BLOCK: /^#\+html:\s*(.+)$/gim,
@@ -32,10 +32,11 @@ export const PATTERNS = {
   JSX_BLOCK: /^#\+jsx:\s*(.+)$/gim,
 
   // Export blocks: #+begin_export type ... #+end_export
-  EXPORT_BLOCK: /#\+begin_export (\w+)(.*)?\s*\n([\s\S]*?)#\+end_export/g,
+  EXPORT_BLOCK: /#\+begin_export (\w+)(.*)?[ \t]*\n([\s\S]*?)#\+end_export/g,
 
   // Export HTML blocks: #+begin_export html ... #+end_export
-  EXPORT_HTML_BLOCK: /#\+begin_export html(.*)?\s*\n([\s\S]*?)#\+end_export/g,
+  EXPORT_HTML_BLOCK:
+    /#\+begin_export html(.*)?[ \t]*\n([\s\S]*?)#\+end_export/g,
 
   // Callout blocks: #+begin_type ... #+end_type
   CALLOUT_BLOCK: /#\+begin_(\w+)\s*\n([\s\S]*?)#\+end_\1/g,
