@@ -340,6 +340,120 @@ function hello() {
     );
   });
 
+  it('should handle multiple code blocks in the same document', async () => {
+    const orgContent = `First paragraph.
+
+#+begin_src javascript
+console.log('first block');
+#+end_src
+
+Some text in between.
+
+#+begin_src python
+print("second block")
+#+end_src
+
+Final paragraph.`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`First paragraph.
+
+\`\`\`javascript
+console.log('first block');
+\`\`\`
+
+Some text in between.
+
+\`\`\`python
+print("second block")
+\`\`\`
+
+Final paragraph.`);
+  });
+
+  it('should handle code blocks without language specification', async () => {
+    const orgContent = `#+begin_src
+some code without language
+#+end_src`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`\`\`\`
+some code without language
+\`\`\``);
+  });
+
+  it('should handle code blocks with special characters and multiple lines', async () => {
+    const orgContent = `#+begin_src javascript
+function test() {
+  const regex = /test/;
+  const template = \`Hello \${name}!\`;
+  return "multi-line
+string";
+}
+#+end_src`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`\`\`\`javascript
+function test() {
+  const regex = /test/;
+  const template = \`Hello \${name}!\`;
+  return "multi-line
+string";
+}
+\`\`\``);
+  });
+
+  it('should preserve org syntax inside text code blocks', async () => {
+    const orgContent = `#+begin_src text
+#+begin_src javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+console.log(fibonacci(10));
+#+end_src
+
+#+begin_src python
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))
+#+end_src
+#+end_src`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`\`\`\`text
+#+begin_src javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+console.log(fibonacci(10));
+#+end_src
+
+#+begin_src python
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+print(quicksort([3, 6, 8, 10, 1, 2, 1]))
+#+end_src
+\`\`\``);
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title

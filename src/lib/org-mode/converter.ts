@@ -47,35 +47,6 @@ export function getCalloutTypeFromOrgType(orgType: string): string | null {
 }
 
 /**
- * Convert AST nodes to markdown string
- */
-function astToMarkdown(nodes: any[]): string {
-  return nodes
-    .map((node) => {
-      if (node.type === 'text') {
-        // Convert Org formatting to Markdown
-        let text = node.value;
-        // Convert Org bold *text* to **text**
-        text = text.replace(/\*([^*]+)\*/g, '**$1**');
-        // Convert Org italic /text/ to *text*
-        text = text.replace(/\/([^/]+)\//g, '*$1*');
-        return text;
-      }
-      if (node.type === 'bold')
-        return `**${astToMarkdown(node.children || [])}**`;
-      if (node.type === 'italic')
-        return `*${astToMarkdown(node.children || [])}*`;
-      if (node.type === 'code') return `\`${node.value}\``;
-      if (node.type === 'verbatim') return `\`${node.value}\``;
-      if (node.type === 'paragraph') return astToMarkdown(node.children || []);
-      if (node.type === 'newline') return '\n';
-      // Add more node types as needed
-      return '';
-    })
-    .join('');
-}
-
-/**
  * Function to convert Org AST to HTML text
  */
 function astToHtml(ast: any[]): string {
@@ -370,17 +341,77 @@ export async function convertOrgToMdx(
   }
 
   // Temporarily replace code blocks to avoid processing them during unified pipeline
-  const codeBlocks: string[] = [];
-  orgContent = orgContent.replace(
-    /#\+begin_src\s+(\w+)\s*\n([\s\S]*?)#\+end_src/g,
-    (match, lang, content) => {
-      // Trim leading/trailing newlines but preserve indentation
-      const trimmedContent = content.replace(/^\n+/, '').replace(/\n+$/, '');
-      const mdxBlock = `\`\`\`${lang}\n${trimmedContent}\n\`\`\``;
-      codeBlocks.push(mdxBlock);
-      return `CODEBLOCKMARKER${codeBlocks.length - 1}`;
-    },
-  );
+  const codeBlocks: Array<{ original: string; lang: string }> = [];
+
+  // First, replace all text blocks to preserve their inner content
+  function findMatchingEnd(content: string, startIndex: number): number {
+    let nestingLevel = 1;
+    let searchIndex = startIndex;
+
+    while (searchIndex < content.length && nestingLevel > 0) {
+      const nextBegin = content.indexOf('#+begin_src', searchIndex);
+      const nextEnd = content.indexOf('#+end_src', searchIndex);
+
+      if (nextEnd === -1) return -1; // No matching end
+
+      if (nextBegin !== -1 && nextBegin < nextEnd) {
+        // Found nested begin_src
+        nestingLevel++;
+        searchIndex = nextBegin + '#+begin_src'.length;
+      } else {
+        // Found end_src
+        nestingLevel--;
+        if (nestingLevel === 0) {
+          return nextEnd + '#+end_src'.length;
+        }
+        searchIndex = nextEnd + '#+end_src'.length;
+      }
+    }
+
+    return -1; // No matching end found
+  }
+
+  function replaceTextBlocks(content: string): string {
+    let result = content;
+
+    while (true) {
+      const beginIndex = result.indexOf('#+begin_src text', 0);
+      if (beginIndex === -1) break;
+
+      // Find the newline after begin_src text
+      const newlineIndex = result.indexOf('\n', beginIndex);
+      if (newlineIndex === -1) break;
+
+      const endIndex = findMatchingEnd(result, newlineIndex + 1);
+      if (endIndex === -1) break;
+
+      const textBlock = result.substring(beginIndex, endIndex);
+      console.log('textBlock:', JSON.stringify(textBlock));
+      codeBlocks.push({ original: textBlock, lang: 'text' });
+      const marker = `CODEBLOCKMARKER${codeBlocks.length - 1}`;
+
+      result =
+        result.substring(0, beginIndex) + marker + result.substring(endIndex);
+    }
+
+    return result;
+  }
+
+  orgContent = replaceTextBlocks(orgContent);
+
+  // Then handle other code blocks with recursion
+  function replaceCodeBlocks(content: string): string {
+    return content.replace(
+      /#\+begin_src(?:\s+(\w+))?\s*\n([\s\S]*?)#\+end_src/g,
+      (match, lang, innerContent) => {
+        const processedInner = replaceCodeBlocks(innerContent);
+        const newMatch = match.replace(innerContent, processedInner);
+        codeBlocks.push({ original: newMatch, lang: lang || '' });
+        return `CODEBLOCKMARKER${codeBlocks.length - 1}`;
+      },
+    );
+  }
+  orgContent = replaceCodeBlocks(orgContent);
 
   // Extract callouts for separate processing
   const callouts: Array<{ type: string; content: string; index: number }> = [];
@@ -433,11 +464,59 @@ export async function convertOrgToMdx(
     );
   }
 
-  // Restore code blocks
+  // Restore code blocks, converting org code blocks to markdown
+  const restoreCodeBlock = (blockInfo: {
+    original: string;
+    lang: string;
+  }): string => {
+    const { original, lang } = blockInfo;
+    const isTextBlock = lang === 'text';
+
+    if (isTextBlock) {
+      // For text blocks, extract content between begin and end markers
+      const beginMarker = '#+begin_src text\n';
+      const endMarker = '\n#+end_src';
+      const beginIndex = original.indexOf(beginMarker);
+      const endIndex = original.lastIndexOf(endMarker);
+
+      if (beginIndex !== -1 && endIndex !== -1 && endIndex > beginIndex) {
+        const content = original.substring(
+          beginIndex + beginMarker.length,
+          endIndex,
+        );
+        // Remove leading/trailing newlines but preserve indentation
+        const trimmedContent = content.replace(/^\n+/, '').replace(/\n+$/, '');
+        return `\`\`\`text\n${trimmedContent}\n\`\`\``;
+      }
+      return original; // fallback
+    } else {
+      // Convert org code block to markdown, recursively restoring inner blocks
+      let result = original.replace(
+        /#\+begin_src(?:\s+(\w+))?\s*\n([\s\S]*?)#\+end_src/g,
+        (match: string, blockLang: string, content: string) => {
+          // Restore any markers in content first
+          const restoredContent = content.replace(
+            /CODEBLOCKMARKER(\d+)/g,
+            (markerMatch: string, markerIndex: string) => {
+              return restoreCodeBlock(codeBlocks[parseInt(markerIndex)]);
+            },
+          );
+          // Remove leading/trailing newlines but preserve indentation
+          const trimmedContent = restoredContent
+            .replace(/^\n+/, '')
+            .replace(/\n+$/, '');
+          const language = blockLang || '';
+          return `\`\`\`${language}\n${trimmedContent}\n\`\`\``;
+        },
+      );
+      return result;
+    }
+  };
+
   markdown = markdown.replace(
     /CODEBLOCKMARKER(\d+)/g,
     (match: string, index: string) => {
-      return codeBlocks[parseInt(index)];
+      return restoreCodeBlock(codeBlocks[parseInt(index)]);
     },
   );
 

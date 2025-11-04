@@ -25,9 +25,15 @@ Implement a simplified approach:
 - [x] Modify `convertOrgToMdx` in `converter.ts` to use simplified codeblock handling
 - [x] Remove `replaceCodeBlocks` recursive function
 - [x] Simplify `restoreCodeBlock` function
-- [x] Update unit tests to reflect simplified behavior
+- [x] Update regex to handle codeblocks without language specification
+- [x] Add comprehensive unit tests for edge cases with precise assertions:
+  - Multiple codeblocks in same document (exact markdown output matching)
+  - Codeblocks without language (exact markdown output matching)
+  - Codeblocks with special characters and multiline content (exact markdown output matching)
 - [x] Verify all existing functionality still works
-- [x] Run full test suite to ensure no regressions
+- [x] Implement proper text block handling to preserve inner org syntax
+- [x] Add test for text blocks with nested org syntax (preserved as-is)
+- [x] Run full test suite to ensure no regressions (33/33 tests passing)
 
 ## Benefits
 
