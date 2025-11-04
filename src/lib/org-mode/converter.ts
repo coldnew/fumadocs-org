@@ -369,12 +369,15 @@ export async function convertOrgToMdx(
       options.defaultDescription || 'Generated from Org-mode';
   }
 
-  // Temporarily replace code blocks to avoid processing callouts inside them
+  // Temporarily replace code blocks to avoid processing them during unified pipeline
   const codeBlocks: string[] = [];
   orgContent = orgContent.replace(
-    /#\+begin_src\s+\w+\s*\n([\s\S]*?)#\+end_src/g,
-    (match) => {
-      codeBlocks.push(match);
+    /#\+begin_src\s+(\w+)\s*\n([\s\S]*?)#\+end_src/g,
+    (match, lang, content) => {
+      // Trim leading/trailing newlines but preserve indentation
+      const trimmedContent = content.replace(/^\n+/, '').replace(/\n+$/, '');
+      const mdxBlock = `\`\`\`${lang}\n${trimmedContent}\n\`\`\``;
+      codeBlocks.push(mdxBlock);
       return `CODEBLOCKMARKER${codeBlocks.length - 1}`;
     },
   );
@@ -430,19 +433,13 @@ export async function convertOrgToMdx(
     );
   }
 
-  // Restore code blocks, converting org code blocks to markdown
-  markdown = markdown.replace(/CODEBLOCKMARKER(\d+)/g, (match, index) => {
-    const orgBlock = codeBlocks[parseInt(index)];
-    // Convert org code block to markdown
-    return orgBlock.replace(
-      /#\+begin_src\s+(\w+)\s*\n([\s\S]*?)#\+end_src/g,
-      (match, lang, content) => {
-        // Remove leading/trailing newlines but preserve indentation
-        const trimmedContent = content.replace(/^\n+/, '').replace(/\n+$/, '');
-        return `\`\`\`${lang}\n${trimmedContent}\n\`\`\``;
-      },
-    );
-  });
+  // Restore code blocks
+  markdown = markdown.replace(
+    /CODEBLOCKMARKER(\d+)/g,
+    (match: string, index: string) => {
+      return codeBlocks[parseInt(index)];
+    },
+  );
 
   // Generate frontmatter
   const frontmatter = matter.stringify('', keywords);

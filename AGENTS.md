@@ -41,6 +41,14 @@
 
 - **Task Completion**: When completing a task, provide a summary of what was done and suggestions for future improvements
 
+## Plan Management
+
+- **Plan Folder**: plans/ folder stores planning prototypes for future features and improvements
+- **Numbering**: Sequential numbering starting from 0001-xxx.md, same as tasks
+- **Purpose**: High-level planning and ideation, not detailed implementation tasks
+- **Implementation Process**: When user requests to implement a specific plan, convert the plan file content into a suitable task format, create the task in tasks/ folder, and remove the original plan file
+- **Confirmation**: Always confirm with user before creating plan files or converting plans to tasks
+
 ## Testing
 
 - **Framework**: Vitest with UI support
