@@ -454,6 +454,35 @@ print(quicksort([3, 6, 8, 10, 1, 2, 1]))
 \`\`\``);
   });
 
+  it('should convert example blocks to markdown code blocks', async () => {
+    const orgContent = `#+begin_example
+Some example text
+with *markup* that should be preserved.
+#+end_example`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain(
+      '```\nSome example text\nwith *markup* that should be preserved.\n```',
+    );
+  });
+
+  it('should remove comment blocks', async () => {
+    const orgContent = `Some text
+
+#+begin_comment
+This is a comment
+#+end_comment
+
+More text.`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).not.toContain('This is a comment');
+    expect(result.markdown).toContain('Some text');
+    expect(result.markdown).toContain('More text.');
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title

@@ -342,6 +342,7 @@ export async function convertOrgToMdx(
 
   // Temporarily replace code blocks to avoid processing them during unified pipeline
   const codeBlocks: Array<{ original: string; lang: string }> = [];
+  const exampleBlocks: Array<{ content: string }> = [];
 
   // First, replace all text blocks to preserve their inner content
   function findMatchingEnd(content: string, startIndex: number): number {
@@ -412,6 +413,23 @@ export async function convertOrgToMdx(
     );
   }
   orgContent = replaceCodeBlocks(orgContent);
+
+  // Handle example blocks
+  orgContent = orgContent.replace(
+    /#\+begin_example\s*\n([\s\S]*?)#\+end_example/g,
+    (match, content) => {
+      exampleBlocks.push({ content });
+      return `EXAMPLEBLOCKMARKER${exampleBlocks.length - 1}`;
+    },
+  );
+
+  // Handle comment blocks
+  orgContent = orgContent.replace(
+    /#\+begin_comment\s*\n([\s\S]*?)#\+end_comment/g,
+    () => {
+      return '';
+    },
+  );
 
   // Extract callouts for separate processing
   const callouts: Array<{ type: string; content: string; index: number }> = [];
@@ -519,6 +537,13 @@ export async function convertOrgToMdx(
       return restoreCodeBlock(codeBlocks[parseInt(index)]);
     },
   );
+
+  // Restore example blocks
+  markdown = markdown.replace(/EXAMPLEBLOCKMARKER(\d+)/g, (match, index) => {
+    const block = exampleBlocks[parseInt(index)];
+    const trimmed = block.content.replace(/^\n+/, '').replace(/\n+$/, '');
+    return `\`\`\`\n${trimmed}\n\`\`\``;
+  });
 
   // Generate frontmatter
   const frontmatter = matter.stringify('', keywords);
