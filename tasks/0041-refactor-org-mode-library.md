@@ -1,6 +1,6 @@
 # 0041: Refactor Org-mode Library Architecture
 
-## Status: in_progress (Phase 1 & 2 completed ✅)
+## Status: in_progress (Phase 1-4 completed ✅)
 
 ## Overview
 
@@ -25,11 +25,30 @@ Refactor the `src/lib/org-mode` directory to improve maintainability, type safet
 - ✅ Created plugin types and interfaces for better type safety
 - ✅ Replaced global variables with proper context objects
 
+### Phase 3: Block Processing System ✅
+
+- ✅ Created `blocks/` directory with modular block processing
+- ✅ Extracted code block handling (`blocks/code-blocks.ts`)
+- ✅ Extracted LaTeX block handling (`blocks/latex-blocks.ts`)
+- ✅ Extracted HTML block handling (`blocks/html-blocks.ts`)
+- ✅ Extracted JSX block handling (`blocks/jsx-blocks.ts`)
+- ✅ Extracted export block handling (`blocks/export-blocks.ts`)
+- ✅ Created block processing types and interfaces
+- ✅ Integrated block processing into main converter
+
+### Phase 4: Converter Simplification ✅
+
+- ✅ Created plugin context object to replace global variables
+- ✅ Updated unified pipeline to use modular plugins with context
+- ✅ Removed global variables (`globalTableAlignments`, `globalCaptions`)
+- ✅ Removed old inline plugin functions from `converter.ts`
+- ✅ Updated checkbox handling to use new plugin system
+- ✅ Fixed export block processing to trim content properly
+- ✅ All tests pass with refactored architecture
+
 ### Next Steps
 
-- **Phase 3**: Create block processing system (code, latex, html, jsx blocks)
-- **Phase 4**: Simplify main converter to use modular components
-- **Phase 5**: Update tests and ensure backward compatibility
+- **Phase 5**: Final validation and documentation updates
 
 ## Why Refactor?
 

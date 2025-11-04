@@ -1,0 +1,193 @@
+import type { CodeBlock } from '../types';
+import type { BlockContext } from './types';
+import { MARKERS, PATTERNS, LANGUAGE_MAPPINGS } from '../constants';
+
+/**
+ * Find the matching end for nested blocks
+ */
+function findMatchingEnd(content: string, startIndex: number): number {
+  let nestingLevel = 1;
+  let searchIndex = startIndex;
+
+  while (searchIndex < content.length && nestingLevel > 0) {
+    const nextBegin = content.indexOf('#+begin_src', searchIndex);
+    const nextEnd = content.indexOf('#+end_src', searchIndex);
+
+    if (nextEnd === -1) return -1; // No matching end
+
+    if (nextBegin !== -1 && nextBegin < nextEnd) {
+      // Found nested begin_src
+      nestingLevel++;
+      searchIndex = nextBegin + '#+begin_src'.length;
+    } else {
+      // Found end_src
+      nestingLevel--;
+      if (nestingLevel === 0) {
+        return nextEnd + '#+end_src'.length;
+      }
+      searchIndex = nextEnd + '#+end_src'.length;
+    }
+  }
+
+  return -1; // No matching end found
+}
+
+/**
+ * Process code blocks in org content
+ */
+export function processCodeBlocks(
+  content: string,
+  context: BlockContext,
+): string {
+  let result = content;
+  let codeBlockIndex = 0;
+
+  // Handle text blocks first (with proper nesting support)
+  while (true) {
+    const beginIndex = result.indexOf('#+begin_src text', 0);
+    if (beginIndex === -1) break;
+
+    // Find the newline after begin_src text
+    const newlineIndex = result.indexOf('\n', beginIndex);
+    if (newlineIndex === -1) break;
+
+    const endIndex = findMatchingEnd(result, newlineIndex + 1);
+    if (endIndex === -1) break;
+
+    const textBlock = result.substring(beginIndex, endIndex);
+    context.codeBlocks.push({
+      original: textBlock,
+      lang: 'text',
+    });
+    const marker = `${MARKERS.CODE_BLOCK}${codeBlockIndex++}`;
+
+    result =
+      result.substring(0, beginIndex) + marker + result.substring(endIndex);
+  }
+
+  // Handle org blocks (with proper nesting support)
+  while (true) {
+    const beginIndex = result.indexOf('#+begin_src org', 0);
+    if (beginIndex === -1) break;
+
+    // Find the newline after begin_src org
+    const newlineIndex = result.indexOf('\n', beginIndex);
+    if (newlineIndex === -1) break;
+
+    const endIndex = findMatchingEnd(result, newlineIndex + 1);
+    if (endIndex === -1) break;
+
+    const orgBlock = result.substring(beginIndex, endIndex);
+    context.codeBlocks.push({
+      original: orgBlock,
+      lang: 'org',
+    });
+    const marker = `${MARKERS.CODE_BLOCK}${codeBlockIndex++}`;
+
+    result =
+      result.substring(0, beginIndex) + marker + result.substring(endIndex);
+  }
+
+  // Handle other code blocks with language detection
+  result = result.replace(
+    PATTERNS.CODE_BLOCK,
+    (
+      _match: string,
+      lang: string = '',
+      _headerArgs: string = '',
+      blockContent: string,
+    ) => {
+      context.codeBlocks.push({
+        original: _match,
+        lang: lang || '',
+      });
+      return `${MARKERS.CODE_BLOCK}${codeBlockIndex++}`;
+    },
+  );
+
+  return result;
+}
+
+/**
+ * Restore code blocks in markdown
+ */
+export function restoreCodeBlocks(
+  markdown: string,
+  context: BlockContext,
+): string {
+  return markdown.replace(
+    new RegExp(`${MARKERS.CODE_BLOCK}(\\d+)`, 'g'),
+    (_: string, index: string) => {
+      const blockIndex = parseInt(index);
+      const block = context.codeBlocks[blockIndex];
+      if (!block) return '';
+
+      const { original, lang } = block;
+
+      if (lang === 'text') {
+        // For text blocks, extract content between begin and end markers
+        const beginMarker = '#+begin_src text\n';
+        const endMarker = '\n#+end_src';
+        const beginIndex = original.indexOf(beginMarker);
+        const endIndex = original.lastIndexOf(endMarker);
+
+        if (beginIndex !== -1 && endIndex !== -1 && endIndex > beginIndex) {
+          const content = original.substring(
+            beginIndex + beginMarker.length,
+            endIndex,
+          );
+          // Remove leading/trailing newlines but preserve indentation
+          const trimmedContent = content
+            .replace(/^\n+/, '')
+            .replace(/\n+$/, '');
+          return `\`\`\`text\n${trimmedContent}\n\`\`\``;
+        }
+        return original; // fallback
+      } else if (lang === 'org') {
+        // For org blocks, extract content and put in text code block without processing inner blocks
+        const beginMarker = '#+begin_src org\n';
+        const endMarker = '\n#+end_src';
+        const beginIndex = original.indexOf(beginMarker);
+        const endIndex = original.lastIndexOf(endMarker);
+
+        if (beginIndex !== -1 && endIndex !== -1 && endIndex > beginIndex) {
+          const content = original.substring(
+            beginIndex + beginMarker.length,
+            endIndex,
+          );
+          // Remove leading/trailing newlines but preserve indentation
+          const trimmedContent = content
+            .replace(/^\n+/, '')
+            .replace(/\n+$/, '');
+          return `\`\`\`text\n${trimmedContent}\n\`\`\``;
+        }
+        return original; // fallback
+      } else {
+        // Convert org code block to markdown, recursively restoring inner blocks
+        let result = original.replace(
+          /#\+begin_src(?:\s+(\w+))?\s*\n([\s\S]*?)#\+end_src/g,
+          (_match: string, blockLang: string, content: string) => {
+            // Restore any markers in content first
+            const restoredContent = content.replace(
+              new RegExp(`${MARKERS.CODE_BLOCK}(\\d+)`, 'g'),
+              (_markerMatch: string, markerIndex: string) => {
+                return restoreCodeBlocks(
+                  `${MARKERS.CODE_BLOCK}${markerIndex}`,
+                  context,
+                );
+              },
+            );
+            // Remove leading/trailing newlines but preserve indentation
+            const trimmedContent = restoredContent
+              .replace(/^\n+/, '')
+              .replace(/\n+$/, '');
+            // Map 'math' language to 'latex' for syntax highlighting
+            const language = blockLang === 'math' ? 'latex' : blockLang || '';
+            return `\`\`\`${language}\n${trimmedContent}\n\`\`\``;
+          },
+        );
+        return result;
+      }
+    },
+  );
+}
