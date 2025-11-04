@@ -7,7 +7,6 @@
 .source
 .cache
 content/**/*.org.mdx
-content/**/*.org.md5sum
 
 # test & build
 /coverage
