@@ -28,3 +28,4 @@ export {
   FILE_EXTENSIONS,
   DEFAULT_FRONTMATTER,
 } from './constants';
+export * from './plugins';
