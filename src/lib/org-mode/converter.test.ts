@@ -828,8 +828,8 @@ Some text after the JSX block.`;
 Some text after the JSX block.`);
   });
 
-  it('should handle multiple #+begin_export jsx blocks', async () => {
-    const orgContent = `First JSX block:
+  it('should handle multiple generic export blocks including JSX', async () => {
+    const orgContent = `JSX block:
 
 #+begin_export jsx
 <header className="hero">
@@ -837,7 +837,15 @@ Some text after the JSX block.`);
 </header>
 #+end_export
 
-Second JSX block:
+Markdown block:
+
+#+begin_export markdown
+# Raw Markdown
+
+This is **bold** text.
+#+end_export
+
+Another JSX block:
 
 #+begin_export jsx
 <footer className="footer">
@@ -847,13 +855,19 @@ Second JSX block:
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toBe(`First JSX block:
+    expect(result.markdown).toBe(`JSX block:
 
 <header className="hero">
   <h1>Welcome</h1>
 </header>
 
-Second JSX block:
+Markdown block:
+
+# Raw Markdown
+
+This is **bold** text.
+
+Another JSX block:
 
 <footer className="footer">
   <p>&copy; 2024</p>

@@ -93,18 +93,25 @@ You can reference React components that will be available in your MDX context:
 
 ** Comparison with HTML Blocks
 
-| Feature | #+HTML: | #+JSX: | #+begin_export html | #+begin_export jsx |
-|---------|---------|--------|---------------------|-------------------|
-| Syntax | HTML | JSX | HTML | JSX |
+| Feature | #+HTML: | #+JSX: | #+begin_export html | Generic Export Blocks |
+|---------|---------|--------|---------------------|----------------------|
+| Syntax | HTML | JSX | HTML | Any format (JSX, Markdown, LaTeX, etc.) |
 | Conversion | HTML → JSX | Direct output | HTML → JSX | Direct output |
-| Event handlers | Converted to JSX | Already JSX | Converted to JSX | Already JSX |
-| Attributes | class → className | Already correct | class → className | Already correct |
+| Event handlers | Converted to JSX | Already JSX | Converted to JSX | As-is |
+| Attributes | class → className | Already correct | class → className | As-is |
 | Multi-line | No | No | Yes | Yes |
-| Use case | Static HTML | Interactive components | Complex static HTML | Complex interactive JSX |
+| Use case | Static HTML | Interactive components | Complex static HTML | Any export format |
 
 ** Generic Export Blocks
 
-For other export formats, use generic =#+begin_export <type>= blocks. The content is exported as-is without any processing:
+For any export format including JSX, Markdown, LaTeX, and custom formats, use generic =#+begin_export <type>= blocks. The content is exported as-is without any processing:
+
+#+begin_export jsx
+<div className="custom-component">
+  <h2>JSX Component</h2>
+  <p>This JSX is exported directly.</p>
+</div>
+#+end_export
 
 #+begin_export markdown
 # Raw Markdown

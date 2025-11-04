@@ -533,22 +533,6 @@ export async function convertOrgToMdx(
     },
   );
 
-  // Extract #+begin_export jsx blocks for separate processing (no conversion needed)
-  const exportJsxBlocks: Array<{ jsx: string; index: number }> = [];
-  let exportJsxIndex = 0;
-  orgContent = orgContent.replace(
-    /#\+begin_export jsx\s*\n([\s\S]*?)#\+end_export/g,
-    (_, jsx: string) => {
-      exportJsxBlocks.push({
-        jsx: jsx.trim(),
-        index: exportJsxIndex,
-      });
-      const placeholder = `EXPORTJSXMARKER${exportJsxIndex}`;
-      exportJsxIndex++;
-      return placeholder;
-    },
-  );
-
   // Extract generic #+begin_export blocks for separate processing (export as-is)
   const exportBlocks: Array<{ content: string; type: string; index: number }> =
     [];
@@ -556,8 +540,8 @@ export async function convertOrgToMdx(
   orgContent = orgContent.replace(
     /#\+begin_export (\w+)\s*\n([\s\S]*?)#\+end_export/g,
     (_, type: string, content: string) => {
-      // Skip html and jsx types as they're handled separately
-      if (type === 'html' || type === 'jsx') {
+      // Skip html type as it needs special JSX conversion
+      if (type === 'html') {
         return _;
       }
       exportBlocks.push({
@@ -619,12 +603,6 @@ export async function convertOrgToMdx(
   for (const jsxBlock of jsxBlocks) {
     const marker = `JSXMARKER${jsxBlock.index}`;
     markdown = markdown.replace(marker, jsxBlock.jsx);
-  }
-
-  // Restore export JSX blocks directly (no conversion needed)
-  for (const exportJsxBlock of exportJsxBlocks) {
-    const marker = `EXPORTJSXMARKER${exportJsxBlock.index}`;
-    markdown = markdown.replace(marker, exportJsxBlock.jsx);
   }
 
   // Restore generic export blocks directly (export as-is)
