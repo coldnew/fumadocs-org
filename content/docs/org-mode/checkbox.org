@@ -8,7 +8,7 @@ Org-mode supports checkboxes in list items, allowing you to track task completio
 
 - [ ] Unchecked (incomplete task)
 - [X] Checked (completed task)
-- [-] Indeterminate (partially complete or in progress)
+- [-] Indeterminate (partially complete or in progress) - *Not yet supported in Fumadocs' renderer*
 
 * Basic Checkbox Examples
 
@@ -103,5 +103,6 @@ You can use checkboxes to track overall progress:
 - Checkboxes are part of Org-mode's list functionality
 - They can be nested to create hierarchical task structures
 - The indeterminate state ([-]) is useful for tasks that are in progress or partially complete
+- *Note: Indeterminate checkboxes ([-]) are not yet supported in Fumadocs' renderer - they appear as literal text (may be implemented in the future)*
 - Checkboxes can be toggled using C-c C-c when editing in Emacs
 - Statistics cookies like [3/5] can be automatically updated based on checkbox states
