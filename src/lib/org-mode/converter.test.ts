@@ -798,6 +798,68 @@ Some text in between.
 <Component prop="mixed" />`);
   });
 
+  it('should convert #+begin_export jsx blocks to JSX without transformation', async () => {
+    const orgContent = `#+begin_export jsx
+<div className="card">
+  <div className="card-header">
+    <h3>Card Title</h3>
+  </div>
+  <div className="card-body">
+    <p>This is JSX content that gets preserved exactly.</p>
+    <button className="btn btn-primary">Action</button>
+  </div>
+</div>
+#+end_export
+
+Some text after the JSX block.`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`<div className="card">
+  <div className="card-header">
+    <h3>Card Title</h3>
+  </div>
+  <div className="card-body">
+    <p>This is JSX content that gets preserved exactly.</p>
+    <button className="btn btn-primary">Action</button>
+  </div>
+</div>
+
+Some text after the JSX block.`);
+  });
+
+  it('should handle multiple #+begin_export jsx blocks', async () => {
+    const orgContent = `First JSX block:
+
+#+begin_export jsx
+<header className="hero">
+  <h1>Welcome</h1>
+</header>
+#+end_export
+
+Second JSX block:
+
+#+begin_export jsx
+<footer className="footer">
+  <p>&copy; 2024</p>
+</footer>
+#+end_export`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`First JSX block:
+
+<header className="hero">
+  <h1>Welcome</h1>
+</header>
+
+Second JSX block:
+
+<footer className="footer">
+  <p>&copy; 2024</p>
+</footer>`);
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title

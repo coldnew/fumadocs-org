@@ -43,6 +43,37 @@ For more complex JSX, use proper indentation:
   </main>
 </div>
 
+** Multi-line JSX Export Blocks
+
+For complex multi-line JSX structures, use =#+begin_export jsx= blocks:
+
+#+begin_export jsx
+<div className="dashboard">
+  <aside className="sidebar">
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#profile">Profile</a></li>
+        <li><a href="#settings">Settings</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main className="main-content">
+    <h2>Dashboard Content</h2>
+    <div className="stats-grid">
+      <div className="stat-card">
+        <h3>Total Users</h3>
+        <span className="stat-number">1,234</span>
+      </div>
+      <div className="stat-card">
+        <h3>Active Sessions</h3>
+        <span className="stat-number">89</span>
+      </div>
+    </div>
+  </main>
+</div>
+#+end_export
+
 ** Using React Components
 
 You can reference React components that will be available in your MDX context:
@@ -62,12 +93,13 @@ You can reference React components that will be available in your MDX context:
 
 ** Comparison with HTML Blocks
 
-| Feature | #+HTML: | #+JSX: |
-|---------|---------|--------|
-| Syntax | HTML | JSX |
-| Conversion | HTML → JSX | Direct output |
-| Event handlers | Converted to JSX | Already JSX |
-| Attributes | class → className | Already correct |
-| Use case | Static HTML | Interactive components |
+| Feature | #+HTML: | #+JSX: | #+begin_export html | #+begin_export jsx |
+|---------|---------|--------|---------------------|-------------------|
+| Syntax | HTML | JSX | HTML | JSX |
+| Conversion | HTML → JSX | Direct output | HTML → JSX | Direct output |
+| Event handlers | Converted to JSX | Already JSX | Converted to JSX | Already JSX |
+| Attributes | class → className | Already correct | class → className | Already correct |
+| Multi-line | No | No | Yes | Yes |
+| Use case | Static HTML | Interactive components | Complex static HTML | Complex interactive JSX |
 
 Choose =#+JSX:= when you need React functionality, and =#+HTML:= when you have static HTML that needs conversion.
