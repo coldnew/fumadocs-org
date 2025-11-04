@@ -310,6 +310,36 @@ function hello() {
     expect(result.markdown).toContain('```');
   });
 
+  it('should preserve indentation in code blocks containing org syntax', async () => {
+    const orgContent = `#+begin_src text
+  #+begin_warning
+  This is indented content.
+  #+end_warning
+#+end_src`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain(
+      '```text\n  #+begin_warning\n  This is indented content.\n  #+end_warning\n```',
+    );
+    // Ensure callouts inside code blocks are not converted
+    expect(result.markdown).not.toContain('<Callout type="warning">');
+  });
+
+  it('should preserve blank lines in code blocks', async () => {
+    const orgContent = `#+begin_src text
+  First line
+
+  Third line
+#+end_src`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toContain(
+      '```text\n  First line\n\n  Third line\n```',
+    );
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title

@@ -369,6 +369,16 @@ export async function convertOrgToMdx(
       options.defaultDescription || 'Generated from Org-mode';
   }
 
+  // Temporarily replace code blocks to avoid processing callouts inside them
+  const codeBlocks: string[] = [];
+  orgContent = orgContent.replace(
+    /#\+begin_src\s+\w+\s*\n([\s\S]*?)#\+end_src/g,
+    (match) => {
+      codeBlocks.push(match);
+      return `CODEBLOCKMARKER${codeBlocks.length - 1}`;
+    },
+  );
+
   // Extract callouts for separate processing
   const callouts: Array<{ type: string; content: string; index: number }> = [];
   let calloutIndex = 0;
@@ -420,11 +430,25 @@ export async function convertOrgToMdx(
     );
   }
 
-  // Unescape HTML tags in html nodes
-  markdown = markdown.replace(/\\</g, '<').replace(/\\>/g, '>');
+  // Restore code blocks, converting org code blocks to markdown
+  markdown = markdown.replace(/CODEBLOCKMARKER(\d+)/g, (match, index) => {
+    const orgBlock = codeBlocks[parseInt(index)];
+    // Convert org code block to markdown
+    return orgBlock.replace(
+      /#\+begin_src\s+(\w+)\s*\n([\s\S]*?)#\+end_src/g,
+      (match, lang, content) => {
+        // Remove leading/trailing newlines but preserve indentation
+        const trimmedContent = content.replace(/^\n+/, '').replace(/\n+$/, '');
+        return `\`\`\`${lang}\n${trimmedContent}\n\`\`\``;
+      },
+    );
+  });
 
   // Generate frontmatter
   const frontmatter = matter.stringify('', keywords);
+
+  // Unescape HTML tags in html nodes
+  markdown = markdown.replace(/\\</g, '<').replace(/\\>/g, '>');
 
   return {
     frontmatter,
