@@ -23,14 +23,9 @@ Use uniorg to parse .org files into AST, convert to Markdown, then let Fumadocs'
 npm install uniorg uniorg-parse uniorg-stringify-markdown
 ```
 
-### 2. Create Custom Remark Plugin
+### 2. Create Custom Remark Plugin (Deprecated)
 
-Create `lib/org-remark-plugin.ts`:
-
-- Check if file extension is .org
-- Parse content with uniorg-parse into AST
-- Convert AST to Markdown using uniorg-stringify-markdown
-- Return Markdown string for MDX processing
+Originally planned to create `lib/org-remark-plugin.ts`, but this approach was replaced with a prebuild script method. The plugin was created but later removed as unused.
 
 ### 3. Update source.config.ts
 
