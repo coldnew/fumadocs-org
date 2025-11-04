@@ -402,15 +402,54 @@ export async function convertOrgToMdx(
 
   // Then handle other code blocks with recursion
   function replaceCodeBlocks(content: string): string {
-    return content.replace(
-      /#\+begin_src(?:\s+(\w+))?\s*\n([\s\S]*?)#\+end_src/g,
-      (match, lang, innerContent) => {
-        const processedInner = replaceCodeBlocks(innerContent);
-        const newMatch = match.replace(innerContent, processedInner);
-        codeBlocks.push({ original: newMatch, lang: lang || '' });
-        return `CODEBLOCKMARKER${codeBlocks.length - 1}`;
-      },
-    );
+    let result = content;
+    let searchIndex = 0;
+
+    while (true) {
+      const beginIndex = result.indexOf('#+begin_src', searchIndex);
+      if (beginIndex === -1) break;
+
+      // Find the newline after begin_src to get the start of content
+      const newlineIndex = result.indexOf('\n', beginIndex);
+      if (newlineIndex === -1) break;
+
+      // Extract language if present
+      const beginLine = result.substring(beginIndex, newlineIndex);
+      const langMatch = beginLine.match(/#\+begin_src(?:\s+(\w+))?/);
+      const lang = langMatch && langMatch[1] ? langMatch[1] : '';
+
+      // Find the matching end_src
+      const endIndex = findMatchingEnd(result, newlineIndex + 1);
+      if (endIndex === -1) break;
+
+      // Extract the full block
+      const fullBlock = result.substring(beginIndex, endIndex);
+
+      // Extract inner content (from after the begin_src line to before the end_src)
+      const innerContentStart = newlineIndex + 1;
+      const innerContentEnd = endIndex - '#+end_src'.length;
+      const innerContent = result.substring(innerContentStart, innerContentEnd);
+
+      // Process inner content recursively, but skip if this is an org block
+      const processedInner =
+        lang === 'org' ? innerContent : replaceCodeBlocks(innerContent);
+
+      // Create the processed block
+      const processedBlock = fullBlock.replace(innerContent, processedInner);
+
+      // Store the block
+      codeBlocks.push({ original: processedBlock, lang });
+
+      // Replace in result
+      const marker = `CODEBLOCKMARKER${codeBlocks.length - 1}`;
+      result =
+        result.substring(0, beginIndex) + marker + result.substring(endIndex);
+
+      // Continue searching from after the marker
+      searchIndex = beginIndex + marker.length;
+    }
+
+    return result;
   }
   orgContent = replaceCodeBlocks(orgContent);
 
@@ -489,6 +528,7 @@ export async function convertOrgToMdx(
   }): string => {
     const { original, lang } = blockInfo;
     const isTextBlock = lang === 'text';
+    const isOrgBlock = lang === 'org';
 
     if (isTextBlock) {
       // For text blocks, extract content between begin and end markers
@@ -507,15 +547,32 @@ export async function convertOrgToMdx(
         return `\`\`\`text\n${trimmedContent}\n\`\`\``;
       }
       return original; // fallback
+    } else if (isOrgBlock) {
+      // For org blocks, extract content and put in text code block without processing inner blocks
+      const beginMarker = '#+begin_src org\n';
+      const endMarker = '\n#+end_src';
+      const beginIndex = original.indexOf(beginMarker);
+      const endIndex = original.lastIndexOf(endMarker);
+
+      if (beginIndex !== -1 && endIndex !== -1 && endIndex > beginIndex) {
+        const content = original.substring(
+          beginIndex + beginMarker.length,
+          endIndex,
+        );
+        // Remove leading/trailing newlines but preserve indentation
+        const trimmedContent = content.replace(/^\n+/, '').replace(/\n+$/, '');
+        return `\`\`\`text\n${trimmedContent}\n\`\`\``;
+      }
+      return original; // fallback
     } else {
       // Convert org code block to markdown, recursively restoring inner blocks
       let result = original.replace(
         /#\+begin_src(?:\s+(\w+))?\s*\n([\s\S]*?)#\+end_src/g,
-        (match: string, blockLang: string, content: string) => {
+        (_match: string, blockLang: string, content: string) => {
           // Restore any markers in content first
           const restoredContent = content.replace(
             /CODEBLOCKMARKER(\d+)/g,
-            (markerMatch: string, markerIndex: string) => {
+            (_markerMatch: string, markerIndex: string) => {
               return restoreCodeBlock(codeBlocks[parseInt(markerIndex)]);
             },
           );

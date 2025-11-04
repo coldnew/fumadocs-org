@@ -491,6 +491,30 @@ More text.`;
     expect(result.markdown).toContain('More text.');
   });
 
+  it('should convert org code blocks to text language for syntax highlighting', async () => {
+    const orgContent = `#+begin_src org
+#+begin_src javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+console.log(fibonacci(10));
+#+end_src
+#+end_src`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`\`\`\`text
+#+begin_src javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+console.log(fibonacci(10));
+#+end_src
+\`\`\``);
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title

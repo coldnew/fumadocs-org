@@ -9,7 +9,7 @@ Org-mode supports syntax-highlighted code blocks in various programming language
 
 ** Syntax Example
 
-#+begin_src text
+#+begin_src org
 #+begin_src javascript
 function fibonacci(n) {
   if (n <= 1) return n;
