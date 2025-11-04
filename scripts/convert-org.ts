@@ -15,25 +15,13 @@ function calculateMd5(filePath: string): string {
 /**
  * Extract checksum from .org.mdx file
  */
-function getEmbeddedChecksum(mdxPath: string): string | null {
+export function getEmbeddedChecksum(mdxPath: string): string | null {
   if (!fs.existsSync(mdxPath)) {
     return null;
   }
-  // Read only first 500 bytes since checksum is in the header comment
-  const stream = fs.createReadStream(mdxPath, {
-    encoding: 'utf8',
-    start: 0,
-    end: 499,
-  });
-  let content = '';
-  for await (const chunk of stream) {
-    content += chunk;
-    const match = content.match(/checksum:\s*([a-f0-9]{32})/);
-    if (match) {
-      return match[1];
-    }
-  }
-  return null;
+  const content = fs.readFileSync(mdxPath, 'utf8');
+  const match = content.match(/checksum:\s*([a-f0-9]{32})/);
+  return match ? match[1] : null;
 }
 
 async function main() {
@@ -95,9 +83,15 @@ async function main() {
       path.basename(orgFile, '.org'),
     );
 
-    // Add generated comment with checksum
-    const comment = `{/* This file is auto-generated from ${orgFile}. Do not edit directly. checksum: ${currentChecksum} */}\n\n`;
-    const finalContent = result.frontmatter + comment + result.markdown;
+    // Modify frontmatter to include checksum
+    const modifiedFrontmatter = result.frontmatter.replace(
+      /^---/,
+      `---\n# checksum: ${currentChecksum}`,
+    );
+
+    // Add generated comment (without checksum)
+    const comment = `{/* This file is auto-generated from ${orgFile}. Do not edit directly. */}\n\n`;
+    const finalContent = modifiedFrontmatter + comment + result.markdown;
 
     // Write to content/docs/
     fs.writeFileSync(mdxPath, finalContent);
@@ -108,4 +102,6 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch(console.error);
+}
