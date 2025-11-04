@@ -13,9 +13,15 @@ This is a test.`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.frontmatter).toContain('title: Test');
-    expect(result.markdown).toContain('# Hello World');
-    expect(result.markdown).toContain('This is a test.');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`# Hello World
+
+This is a test.`);
   });
 
   it('should extract TITLE keyword', async () => {
@@ -25,7 +31,13 @@ Content here.`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.frontmatter).toContain('title: Custom Title');
+    expect(result.frontmatter).toBe(`---
+title: Custom Title
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`Content here.`);
   });
 
   it('should include multiple keywords in frontmatter', async () => {
@@ -37,9 +49,14 @@ Some content.`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.frontmatter).toContain('title: Test Document');
-    expect(result.frontmatter).toContain('author: Test Author');
-    expect(result.frontmatter).toContain('description: A test document');
+    expect(result.frontmatter).toBe(`---
+title: Test Document
+author: Test Author
+description: A test document
+---
+
+`);
+    expect(result.markdown).toBe(`Some content.`);
   });
 
   it('should convert Org headings to Markdown', async () => {
@@ -51,9 +68,19 @@ Content under headings.`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('# Level 1');
-    expect(result.markdown).toContain('## Level 2');
-    expect(result.markdown).toContain('### Level 3');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`# Level 1
+
+## Level 2
+
+### Level 3
+
+Content under headings.`);
   });
 
   it('should convert Org lists to Markdown', async () => {
@@ -66,11 +93,17 @@ Content under headings.`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('* Item 1');
-    expect(result.markdown).toContain('* Item 2');
-    expect(result.markdown).toContain('  * Nested item');
-    // Note: Ordered lists are converted as unordered due to uniorg limitation
-    expect(result.markdown).toContain('* Numbered item 1');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`* Item 1
+* Item 2
+  * Nested item
+* Numbered item 1
+* Numbered item 2`);
   });
 
   it('should preserve code blocks', async () => {
@@ -80,9 +113,15 @@ console.log('hello');
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('```javascript');
-    expect(result.markdown).toContain("console.log('hello');");
-    expect(result.markdown).toContain('```');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`\`\`\`javascript
+console.log('hello');
+\`\`\``);
   });
 
   it('should convert Org tables to Markdown', async () => {
@@ -93,10 +132,16 @@ console.log('hello');
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('| Name  | Age | Occupation |');
-    expect(result.markdown).toContain('| ----- | --- | ---------- |');
-    expect(result.markdown).toContain('| Alice | 25  | Engineer   |');
-    expect(result.markdown).toContain('| Bob   | 30  | Designer   |');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`| Name  | Age | Occupation |
+| ----- | --- | ---------- |
+| Alice | 25  | Engineer   |
+| Bob   | 30  | Designer   |`);
   });
 
   it('should convert links', async () => {
@@ -104,7 +149,15 @@ console.log('hello');
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('[Example Site](https://example.com)');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(
+      `Visit [Example Site](https://example.com) for more info.`,
+    );
   });
 
   it('should handle TODO keywords', async () => {
@@ -113,8 +166,15 @@ console.log('hello');
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('# DONE Completed task');
-    expect(result.markdown).toContain('# TODO Pending task');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`# DONE Completed task
+
+# TODO Pending task`);
   });
 
   it('should convert Org math expressions to LaTeX', async () => {
@@ -128,9 +188,17 @@ $$\lim_{x \to 0} \frac{\sin x}{x} = 1$$`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('$E = mc^2$');
-    expect(result.markdown).toContain('$$ int\\_0^1 f(x) , dx $$');
-    expect(result.markdown).toContain('$$ lim\\_{x o 0} rac{sin x}{x} = 1 $$');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`Inline math: $E = mc^2$
+
+Display math: $$ int\\_0^1 f(x) , dx $$
+
+Complex formula: $$ lim\\_{x o 0} rac{sin x}{x} = 1 $$`);
   });
 
   it('should convert Org callout blocks to Fumadocs Callouts', async () => {
@@ -178,8 +246,13 @@ This is a **bold** message with *italic* text and $math$ formula.
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.frontmatter).toContain('title: Test');
-    expect(result.markdown.trim()).toBe('');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(``);
   });
 
   it('should handle malformed Org syntax gracefully', async () => {
@@ -189,8 +262,15 @@ Some content without proper structure.`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('# Unclosed heading');
-    expect(result.markdown).toContain('Some content without proper structure.');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`# Unclosed heading
+
+Some content without proper structure.`);
   });
 
   it('should handle multiple callout types', async () => {
@@ -237,12 +317,24 @@ Some paragraph with *bold* and /italic/ text.
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('# Heading');
-    expect(result.markdown).toContain('**bold**');
-    expect(result.markdown).toContain('*italic*');
-    expect(result.markdown).toContain('List item 1');
-    expect(result.markdown).toContain('| Table | Column |');
-    expect(result.markdown).toContain('[Link](https://example.com)');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`# Heading
+
+Some paragraph with **bold** and *italic* text.
+
+* List item 1
+* List item 2
+
+| Table | Column |
+| ----- | ------ |
+| Data  | Here   |
+
+[Link](https://example.com)`);
   });
 
   it('should handle invalid Org syntax without crashing', async () => {
@@ -269,9 +361,21 @@ Invalid block
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('Item 1');
-    expect(result.markdown).toContain('Subitem 1.1');
-    expect(result.markdown).toContain('Numbered subitem 2.1');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`* Item 1
+
+  * Subitem 1.1
+  * Subitem 1.2
+
+* Item 2
+
+  1. Numbered subitem 2.1
+  2. Numbered subitem 2.2`);
   });
 
   it('should handle code blocks with language', async () => {
@@ -283,9 +387,17 @@ function hello() {
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('```javascript');
-    expect(result.markdown).toContain('function hello()');
-    expect(result.markdown).toContain('```');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`\`\`\`javascript
+function hello() {
+  console.log("Hello World");
+}
+\`\`\``);
   });
 
   it('should handle frontmatter with special characters', async () => {
@@ -296,12 +408,13 @@ Content here.`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.frontmatter).toContain(
-      'title: Title with "quotes" and \'apostrophes\'',
-    );
-    expect(result.frontmatter).toContain(
-      "description: 'Description with special chars: @#$%^&*()'",
-    );
+    expect(result.frontmatter).toBe(`---
+title: Title with "quotes" and 'apostrophes'
+description: 'Description with special chars: @#$%^&*()'
+---
+
+`);
+    expect(result.markdown).toBe(`Content here.`);
   });
 
   it('should handle code blocks with syntax highlighting', async () => {
@@ -313,9 +426,17 @@ function hello() {
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('```javascript');
-    expect(result.markdown).toContain('function hello()');
-    expect(result.markdown).toContain('```');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`\`\`\`javascript
+function hello() {
+  console.log("Hello World");
+}
+\`\`\``);
   });
 
   it('should preserve indentation in code blocks containing org syntax', async () => {
@@ -327,9 +448,17 @@ function hello() {
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain(
-      '```text\n  #+begin_warning\n  This is indented content.\n  #+end_warning\n```',
-    );
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`\`\`\`text
+  #+begin_warning
+  This is indented content.
+  #+end_warning
+\`\`\``);
     // Ensure callouts inside code blocks are not converted
     expect(result.markdown).not.toContain('<Callout type="warning">');
   });
@@ -343,9 +472,17 @@ function hello() {
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain(
-      '```text\n  First line\n\n  Third line\n```',
-    );
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`\`\`\`text
+  First line
+
+  Third line
+\`\`\``);
   });
 
   it('should handle multiple code blocks in the same document', async () => {
@@ -470,9 +607,16 @@ with *markup* that should be preserved.
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain(
-      '```\nSome example text\nwith *markup* that should be preserved.\n```',
-    );
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`\`\`\`
+Some example text
+with *markup* that should be preserved.
+\`\`\``);
   });
 
   it('should remove comment blocks', async () => {
@@ -486,9 +630,15 @@ More text.`;
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).not.toContain('This is a comment');
-    expect(result.markdown).toContain('Some text');
-    expect(result.markdown).toContain('More text.');
+    expect(result.frontmatter).toBe(`---
+title: Test
+description: Generated from Org-mode
+---
+
+`);
+    expect(result.markdown).toBe(`Some text
+
+More text.`);
   });
 
   it('should convert org code blocks to text language for syntax highlighting', async () => {
