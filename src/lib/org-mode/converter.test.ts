@@ -665,6 +665,62 @@ console.log(fibonacci(10));
 \`\`\``);
   });
 
+  it('should convert #+HTML: directives to JSX', async () => {
+    const orgContent = `#+HTML: <div class="alert alert-info">This is an info alert</div>
+
+Some text in between.
+
+#+HTML: <button class="btn btn-primary">Click me</button>`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown)
+      .toBe(`<div className="alert alert-info">This is an info alert</div>
+
+Some text in between.
+
+<button className="btn btn-primary">Click me</button>`);
+  });
+
+  it('should convert HTML attributes to JSX format', async () => {
+    const orgContent = `#+HTML: <div style="color: red; font-size: 14px;"><strong>Important:</strong> This is styled text.</div>`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(
+      `<div style={{ color: "red", fontSize: 14 }}><strong>Important:</strong> This is styled text.</div>`,
+    );
+  });
+
+  it('should support case-insensitive #+HTML: directives', async () => {
+    const orgContent = `#+html: <div class="lowercase">Lowercase</div>
+
+#+HTML: <div class="uppercase">Uppercase</div>
+
+#+Html: <div class="mixed">Mixed case</div>`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`<div className="lowercase">Lowercase</div>
+
+<div className="uppercase">Uppercase</div>
+
+<div className="mixed">Mixed case</div>`);
+  });
+
+  it('should convert lowercase #+html: directives to JSX', async () => {
+    const orgContent = `#+html: <span class="highlight">This is highlighted text</span>
+
+#+html: <em>Emphasized text</em>`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown)
+      .toBe(`<span className="highlight">This is highlighted text</span>
+
+<em>Emphasized text</em>`);
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title

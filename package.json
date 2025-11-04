@@ -20,6 +20,7 @@
     "fumadocs-ui": "16.0.7",
     "glob": "^11.0.3",
     "gray-matter": "^4.0.3",
+    "html-to-jsx-transform": "^1.2.1",
     "next": "16.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm';
 import remarkStringify from 'remark-stringify';
 import { visit } from 'unist-util-visit';
 import matter from 'gray-matter';
+import { htmlToJsx } from 'html-to-jsx-transform';
 import type { ConversionOptions, ConversionResult } from './types';
 import { generateDefaultTitle } from './utils';
 
@@ -490,6 +491,19 @@ export async function convertOrgToMdx(
     },
   );
 
+  // Extract #+HTML: blocks for separate processing
+  const htmlBlocks: Array<{ html: string; index: number }> = [];
+  let htmlIndex = 0;
+  orgContent = orgContent.replace(/^#\+html:\s*(.+)$/gim, (_, html: string) => {
+    htmlBlocks.push({
+      html: html.trim(),
+      index: htmlIndex,
+    });
+    const placeholder = `HTMLMARKER${htmlIndex}`;
+    htmlIndex++;
+    return placeholder;
+  });
+
   // Convert using direct AST pipeline (inspired by org2mdx)
   const processor = unified()
     .use(parse)
@@ -518,6 +532,13 @@ export async function convertOrgToMdx(
       marker,
       `<Callout type="${callout.type}">\n${calloutMarkdown}\n</Callout>`,
     );
+  }
+
+  // Restore HTML blocks as JSX
+  for (const htmlBlock of htmlBlocks) {
+    const jsx = htmlToJsx(htmlBlock.html);
+    const marker = `HTMLMARKER${htmlBlock.index}`;
+    markdown = markdown.replace(marker, jsx);
   }
 
   // Restore code blocks, converting org code blocks to markdown
