@@ -148,15 +148,17 @@ Here's a helpful tip.
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('<Callout type="warning">');
-    expect(result.markdown).toContain('This is a warning message.');
-    expect(result.markdown).toContain('</Callout>');
+    expect(result.markdown).toBe(`<Callout type="warning">
+This is a warning message.
+</Callout>
 
-    expect(result.markdown).toContain('<Callout type="note">');
-    expect(result.markdown).toContain('This is an informational note.');
+<Callout type="note">
+This is an informational note.
+</Callout>
 
-    expect(result.markdown).toContain('<Callout type="tip">');
-    expect(result.markdown).toContain("Here's a helpful tip.");
+<Callout type="tip">
+Here's a helpful tip.
+</Callout>`);
   });
 
   it('should preserve formatting inside callouts', async () => {
@@ -166,11 +168,9 @@ This is a *bold* message with /italic/ text and $math$ formula.
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('<Callout type="warning">');
-    expect(result.markdown).toContain('**bold**');
-    expect(result.markdown).toContain('*italic*');
-    expect(result.markdown).toContain('math');
-    expect(result.markdown).toContain('</Callout>');
+    expect(result.markdown).toBe(`<Callout type="warning">
+This is a **bold** message with *italic* text and $math$ formula.
+</Callout>`);
   });
 
   it('should handle empty content', async () => {
@@ -208,9 +208,17 @@ Info content
 
     const result = await convertOrgToMdx(orgContent, 'test');
 
-    expect(result.markdown).toContain('<Callout type="warning">');
-    expect(result.markdown).toContain('<Callout type="error">');
-    expect(result.markdown).toContain('<Callout type="info">');
+    expect(result.markdown).toBe(`<Callout type="warning">
+Warning content
+</Callout>
+
+<Callout type="error">
+Error content
+</Callout>
+
+<Callout type="info">
+Info content
+</Callout>`);
   });
 
   it('should handle complex Org content with multiple features', async () => {

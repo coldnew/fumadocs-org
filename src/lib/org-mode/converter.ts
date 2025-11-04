@@ -417,7 +417,7 @@ export async function convertOrgToMdx(
   // Handle example blocks
   orgContent = orgContent.replace(
     /#\+begin_example\s*\n([\s\S]*?)#\+end_example/g,
-    (match, content) => {
+    (_, content) => {
       exampleBlocks.push({ content });
       return `EXAMPLEBLOCKMARKER${exampleBlocks.length - 1}`;
     },
@@ -436,7 +436,7 @@ export async function convertOrgToMdx(
   let calloutIndex = 0;
   orgContent = orgContent.replace(
     /#\+begin_(\w+)\s*\n([\s\S]*?)#\+end_\1/g,
-    (match: string, type: string, content: string) => {
+    (_, type: string, content: string) => {
       const calloutType = getCalloutTypeFromOrgType(type);
       if (calloutType) {
         callouts.push({
@@ -448,7 +448,7 @@ export async function convertOrgToMdx(
         calloutIndex++;
         return placeholder;
       }
-      return match;
+      return _;
     },
   );
 
@@ -531,15 +531,12 @@ export async function convertOrgToMdx(
     }
   };
 
-  markdown = markdown.replace(
-    /CODEBLOCKMARKER(\d+)/g,
-    (match: string, index: string) => {
-      return restoreCodeBlock(codeBlocks[parseInt(index)]);
-    },
-  );
+  markdown = markdown.replace(/CODEBLOCKMARKER(\d+)/g, (_, index: string) => {
+    return restoreCodeBlock(codeBlocks[parseInt(index)]);
+  });
 
   // Restore example blocks
-  markdown = markdown.replace(/EXAMPLEBLOCKMARKER(\d+)/g, (match, index) => {
+  markdown = markdown.replace(/EXAMPLEBLOCKMARKER(\d+)/g, (_, index) => {
     const block = exampleBlocks[parseInt(index)];
     const trimmed = block.content.replace(/^\n+/, '').replace(/\n+$/, '');
     return `\`\`\`\n${trimmed}\n\`\`\``;
