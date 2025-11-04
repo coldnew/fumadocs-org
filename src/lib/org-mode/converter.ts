@@ -387,7 +387,6 @@ export async function convertOrgToMdx(
       if (endIndex === -1) break;
 
       const textBlock = result.substring(beginIndex, endIndex);
-      console.log('textBlock:', JSON.stringify(textBlock));
       codeBlocks.push({ original: textBlock, lang: 'text' });
       const marker = `CODEBLOCKMARKER${codeBlocks.length - 1}`;
 
