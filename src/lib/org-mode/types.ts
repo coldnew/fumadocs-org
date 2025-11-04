@@ -72,6 +72,8 @@ export interface PluginContext {
 export interface CodeBlock {
   original: string;
   lang: string;
+  tangle?: string;
+  exports?: string;
 }
 
 export interface LatexBlock {

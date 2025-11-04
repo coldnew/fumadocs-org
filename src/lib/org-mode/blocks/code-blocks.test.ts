@@ -190,6 +190,34 @@ CODEBLOCKMARKER0
 
 Some text after`);
   });
+
+  it('should parse tangle and exports attributes', () => {
+    const content = `#+begin_src tsx :tangle mdx-components.tsx :exports none
+import defaultComponents from 'fumadocs-ui/mdx';
+#+end_src`;
+
+    const context: BlockContext = {
+      codeBlocks: [],
+      latexBlocks: [],
+      htmlBlocks: [],
+      jsxBlocks: [],
+      exportHtmlBlocks: [],
+      exportBlocks: [],
+      calloutBlocks: [],
+      exampleBlocks: [],
+    };
+
+    const result = processCodeBlocks(content, context);
+
+    expect(result).toBe('CODEBLOCKMARKER0');
+    expect(context.codeBlocks).toHaveLength(1);
+    expect(context.codeBlocks[0]).toEqual({
+      original: content,
+      lang: 'tsx',
+      tangle: 'mdx-components.tsx',
+      exports: 'none',
+    });
+  });
 });
 
 describe('restoreCodeBlocks', () => {
@@ -422,5 +450,63 @@ End outer
     const result = restoreCodeBlocks(markdown, context);
 
     expect(result).toBe('');
+  });
+
+  it('should not render code block when exports none', () => {
+    const context: BlockContext = {
+      codeBlocks: [
+        {
+          original: `#+begin_src tsx :tangle mdx-components.tsx :exports none
+import defaultComponents from 'fumadocs-ui/mdx';
+#+end_src`,
+          lang: 'tsx',
+          tangle: 'mdx-components.tsx',
+          exports: 'none',
+        },
+      ],
+      latexBlocks: [],
+      htmlBlocks: [],
+      jsxBlocks: [],
+      exportHtmlBlocks: [],
+      exportBlocks: [],
+      calloutBlocks: [],
+      exampleBlocks: [],
+    };
+
+    const markdown = 'CODEBLOCKMARKER0';
+    const result = restoreCodeBlocks(markdown, context);
+
+    expect(result).toBe('');
+  });
+
+  it('should add title when tangle present and exports not none', () => {
+    const context: BlockContext = {
+      codeBlocks: [
+        {
+          original: `#+begin_src python :tangle utils.py :exports code
+def hello():
+    pass
+#+end_src`,
+          lang: 'python',
+          tangle: 'utils.py',
+          exports: 'code',
+        },
+      ],
+      latexBlocks: [],
+      htmlBlocks: [],
+      jsxBlocks: [],
+      exportHtmlBlocks: [],
+      exportBlocks: [],
+      calloutBlocks: [],
+      exampleBlocks: [],
+    };
+
+    const markdown = 'CODEBLOCKMARKER0';
+    const result = restoreCodeBlocks(markdown, context);
+
+    expect(result).toBe(`\`\`\`python title="utils.py"
+def hello():
+    pass
+\`\`\``);
   });
 });

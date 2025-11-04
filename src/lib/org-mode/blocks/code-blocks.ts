@@ -3,6 +3,28 @@ import type { BlockContext } from './types';
 import { MARKERS, PATTERNS, LANGUAGE_MAPPINGS } from '../constants';
 
 /**
+ * Parse header arguments from org-mode src block
+ */
+function parseHeaderArgs(headerArgs: string): {
+  tangle?: string;
+  exports?: string;
+} {
+  const args: { tangle?: string; exports?: string } = {};
+  const parts = headerArgs.trim().split(/\s+/);
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    if (part.startsWith(':tangle')) {
+      args.tangle = parts[i + 1];
+      i++; // skip value
+    } else if (part.startsWith(':exports')) {
+      args.exports = parts[i + 1];
+      i++; // skip value
+    }
+  }
+  return args;
+}
+
+/**
  * Find the matching end for nested blocks
  */
 function findMatchingEnd(content: string, startIndex: number): number {
@@ -94,12 +116,15 @@ export function processCodeBlocks(
     (
       _match: string,
       lang: string = '',
-      _headerArgs: string = '',
+      headerArgs: string = '',
       blockContent: string,
     ) => {
+      const parsedArgs = parseHeaderArgs(headerArgs);
       context.codeBlocks.push({
         original: _match,
         lang: lang || '',
+        tangle: parsedArgs.tangle,
+        exports: parsedArgs.exports,
       });
       return `${MARKERS.CODE_BLOCK}${codeBlockIndex++}`;
     },
@@ -163,9 +188,13 @@ export function restoreCodeBlocks(
         }
         return original; // fallback
       } else {
+        // Skip rendering if exports is none
+        if (block.exports === 'none') {
+          return '';
+        }
         // Convert org code block to markdown, recursively restoring inner blocks
         let result = original.replace(
-          /#\+begin_src(?:[ \t]+(\w+)(.*)?)?[ \t]*\n([\s\S]*?)#\+end_src/g,
+          /#\+begin_src(?:[ \t]+(\w+)(.*)?)?[ \t]*\n([\s\S]*?)#\+end_src/gi,
           (
             _match: string,
             blockLang: string,
@@ -185,7 +214,11 @@ export function restoreCodeBlocks(
               .replace(/\n+$/, '');
             // Map 'math' language to 'latex' for syntax highlighting
             const language = blockLang === 'math' ? 'latex' : blockLang || '';
-            return `\`\`\`${language}\n${trimmedContent}\n\`\`\``;
+            let codeBlock = `\`\`\`${language}\n${trimmedContent}\n\`\`\``;
+            if (block.tangle) {
+              codeBlock = `\`\`\`${language} title="${block.tangle}"\n${trimmedContent}\n\`\`\``;
+            }
+            return codeBlock;
           },
         );
         return result;

@@ -1,0 +1,32 @@
+#+TITLE: Code Blocks with Tangle Example
+#+DESCRIPTION: Demonstrating Org-mode source blocks with tangle and exports attributes
+
+* Code Blocks with Tangle
+
+This example shows how Org-mode source blocks with =:tangle= and =:exports none= are converted to MDX code blocks with titles.
+
+** Example Source Block
+
+#+BEGIN_SRC tsx :tangle mdx-components.tsx :exports code
+import defaultComponents from 'fumadocs-ui/mdx';
+// ...
+#+END_SRC
+
+This block should be converted to a code block with title "mdx-components.tsx".
+
+** Another Example
+
+#+BEGIN_SRC python :tangle utils.py :exports code
+def hello():
+    print("Hello, World!")
+#+END_SRC
+
+This one has =:exports code= and =:tangle=, so it should be exported with title "utils.py".
+
+** Example with Exports None
+
+#+BEGIN_SRC js :exports none
+console.log("This code is not exported");
+#+END_SRC
+
+This block has =:exports none=, so it should not appear in the MDX output.

@@ -20,7 +20,7 @@ export const PATTERNS = {
   KEYWORD: /^#\+(\w+):\s*(.*)$/gm,
 
   // Code blocks: #+begin_src lang ... #+end_src
-  CODE_BLOCK: /#\+begin_src(?:[ \t]+(\w+)(.*)?)?[ \t]*\n([\s\S]*?)#\+end_src/g,
+  CODE_BLOCK: /#\+begin_src(?:[ \t]+(\w+)(.*)?)?[ \t]*\n([\s\S]*?)#\+end_src/gi,
 
   // LaTeX blocks: #+begin_latex ... #+end_latex
   LATEX_BLOCK: /#\+begin_latex[ \t]*\n([\s\S]*?)#\+end_latex/g,
