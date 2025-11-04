@@ -26,6 +26,7 @@
 
 - **Commits**: Use Conventional Commits format (e.g., `feat: add new feature`, `fix: resolve bug`)
 - **Pre-commit Checks**: Run `npm run format` before committing to ensure code style consistency
+- **Debug Code Removal**: Remove any debug statements like console.log or printf that output to stdout before committing or after debugging is complete
 - **Commit Policy**: Do not proactively git commit unless explicitly instructed by the user
 
 ## Task Management
