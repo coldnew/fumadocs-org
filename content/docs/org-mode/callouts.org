@@ -9,7 +9,7 @@ Org-mode supports callouts like warnings, notes, and tips for highlighting impor
 
 ** Syntax Example
 
-#+begin_src text
+#+begin_src org
   #+begin_warning
   This is a warning message with *bold* text and a $math$ formula.
   #+end_warning
