@@ -15,7 +15,7 @@ const mathLanguage = {
 // Options: https://fumadocs.vercel.app/docs/mdx/collections#define-docs
 export const docs = defineCollections({
   type: 'doc',
-  dir: ['content/docs', '.cache/docs'],
+  dir: 'content/docs',
 });
 
 export default defineConfig({

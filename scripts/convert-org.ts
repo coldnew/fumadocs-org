@@ -15,8 +15,8 @@ function calculateMd5(filePath: string): string {
 /**
  * Get cached checksum for a file
  */
-function getCachedChecksum(mdxPath: string): string | null {
-  const checksumPath = `${mdxPath}.md5sum`;
+function getCachedChecksum(orgPath: string): string | null {
+  const checksumPath = `${orgPath}.md5sum`;
   if (fs.existsSync(checksumPath)) {
     return fs.readFileSync(checksumPath, 'utf8').trim();
   }
@@ -26,40 +26,39 @@ function getCachedChecksum(mdxPath: string): string | null {
 /**
  * Save checksum for a file
  */
-function saveChecksum(mdxPath: string, checksum: string): void {
-  const checksumPath = `${mdxPath}.md5sum`;
+function saveChecksum(orgPath: string, checksum: string): void {
+  const checksumPath = `${orgPath}.md5sum`;
   fs.writeFileSync(checksumPath, checksum);
 }
 
 async function main() {
   const contentDir = 'content/docs';
-  const cacheDir = '.cache/docs';
-
-  // Ensure cache directory exists
-  fs.mkdirSync(cacheDir, { recursive: true });
 
   // Find all .org files
   const orgFiles = globSync('**/*.org', { cwd: contentDir });
 
-  // Clean up orphaned .mdx files and their checksums
-  const existingMdxFiles = globSync('**/*.mdx', { cwd: cacheDir });
+  // Clean up orphaned .org.mdx files and their checksums
+  const existingMdxFiles = globSync('**/*.org.mdx', { cwd: contentDir });
   for (const mdxFile of existingMdxFiles) {
-    const orgFile = mdxFile.replace(/\.mdx$/, '.org');
+    const orgFile = mdxFile.replace(/\.org\.mdx$/, '.org');
     if (!orgFiles.includes(orgFile)) {
-      const mdxPath = path.join(cacheDir, mdxFile);
+      const mdxPath = path.join(contentDir, mdxFile);
       const checksumPath = `${mdxPath}.md5sum`;
 
       fs.unlinkSync(mdxPath);
       if (fs.existsSync(checksumPath)) {
         fs.unlinkSync(checksumPath);
       }
-      console.log(`Removed orphaned .mdx: ${mdxFile}`);
+      console.log(`Removed orphaned .org.mdx: ${mdxFile}`);
     }
   }
 
   for (const orgFile of orgFiles) {
     const orgPath = path.join(contentDir, orgFile);
-    const mdxPath = path.join(cacheDir, orgFile.replace(/\.org$/, '.mdx'));
+    const mdxPath = path.join(
+      contentDir,
+      orgFile.replace(/\.org$/, '.org.mdx'),
+    );
 
     // Ensure destination directory exists
     fs.mkdirSync(path.dirname(mdxPath), { recursive: true });
@@ -68,7 +67,7 @@ async function main() {
     const currentChecksum = calculateMd5(orgPath);
 
     // Check if we need to re-convert
-    const cachedChecksum = getCachedChecksum(mdxPath);
+    const cachedChecksum = getCachedChecksum(orgPath);
     if (cachedChecksum === currentChecksum && fs.existsSync(mdxPath)) {
       console.log(`Skipped ${orgFile} (unchanged)`);
       continue;
@@ -87,14 +86,14 @@ async function main() {
     const comment = `{/* This file is auto-generated from ${orgFile}. Do not edit directly. */}\n\n`;
     const finalContent = result.frontmatter + comment + result.markdown;
 
-    // Write to .cache/docs/
+    // Write to content/docs/
     fs.writeFileSync(mdxPath, finalContent);
 
     // Save checksum
-    saveChecksum(mdxPath, currentChecksum);
+    saveChecksum(orgPath, currentChecksum);
 
     console.log(
-      `Converted ${orgFile} to .cache/docs/${orgFile.replace('.org', '.mdx')}`,
+      `Converted ${orgFile} to ${orgFile.replace('.org', '.org.mdx')}`,
     );
   }
 }
