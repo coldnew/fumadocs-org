@@ -93,7 +93,7 @@ You can reference React components that will be available in your MDX context:
 
 ** Comparison with HTML Blocks
 
-| Feature | #+HTML: | #+JSX: | #+begin_export html | Generic Export Blocks |
+| Feature | #+HTML: | #+JSX: | HTML export blocks | Generic Export Blocks |
 |---------|---------|--------|---------------------|----------------------|
 | Syntax | HTML | JSX | HTML | Any format (JSX, Markdown, LaTeX, etc.) |
 | Conversion | HTML → JSX | Direct output | HTML → JSX | Direct output |
