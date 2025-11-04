@@ -31,6 +31,22 @@ You can include inline styles and complex HTML structures:
 
 #+HTML: <div style="color: red; font-size: 14px; border: 1px solid #ccc; padding: 10px;"><strong>Important:</strong> This is styled text with <em>emphasis</em>.</div>
 
+** Multi-line HTML Export Blocks
+
+For more complex HTML structures, use =#+begin_export html= blocks:
+
+#+begin_export html
+<div class="card">
+  <div class="card-header">
+    <h3>Card Title</h3>
+  </div>
+  <div class="card-body">
+    <p>This is the card content with <strong>bold text</strong> and <em>italic text</em>.</p>
+    <button class="btn btn-primary">Action Button</button>
+  </div>
+</div>
+#+end_export
+
 ** HTML in Lists and Tables
 
 HTML can be embedded within other Org-mode elements:
@@ -44,3 +60,4 @@ HTML can be embedded within other Org-mode elements:
 - Ensure HTML is valid and well-formed
 - Consider accessibility when adding custom HTML
 - Test HTML rendering in your target output format
+- Use =#+begin_export html= for multi-line HTML content

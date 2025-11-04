@@ -504,6 +504,22 @@ export async function convertOrgToMdx(
     return placeholder;
   });
 
+  // Extract #+begin_export html blocks for separate processing
+  const exportHtmlBlocks: Array<{ html: string; index: number }> = [];
+  let exportHtmlIndex = 0;
+  orgContent = orgContent.replace(
+    /#\+begin_export html\s*\n([\s\S]*?)#\+end_export/g,
+    (_, html: string) => {
+      exportHtmlBlocks.push({
+        html: html.trim(),
+        index: exportHtmlIndex,
+      });
+      const placeholder = `EXPORTHTMLMARKER${exportHtmlIndex}`;
+      exportHtmlIndex++;
+      return placeholder;
+    },
+  );
+
   // Convert using direct AST pipeline (inspired by org2mdx)
   const processor = unified()
     .use(parse)
@@ -538,6 +554,13 @@ export async function convertOrgToMdx(
   for (const htmlBlock of htmlBlocks) {
     const jsx = htmlToJsx(htmlBlock.html);
     const marker = `HTMLMARKER${htmlBlock.index}`;
+    markdown = markdown.replace(marker, jsx);
+  }
+
+  // Restore export HTML blocks as JSX
+  for (const exportHtmlBlock of exportHtmlBlocks) {
+    const jsx = htmlToJsx(exportHtmlBlock.html);
+    const marker = `EXPORTHTMLMARKER${exportHtmlBlock.index}`;
     markdown = markdown.replace(marker, jsx);
   }
 

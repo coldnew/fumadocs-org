@@ -721,6 +721,50 @@ Some text in between.
 <em>Emphasized text</em>`);
   });
 
+  it('should convert #+begin_export html blocks to JSX', async () => {
+    const orgContent = `#+begin_export html
+<div class="alert alert-info">
+  <h3>Important Notice</h3>
+  <p>This is a multi-line HTML block that gets converted to JSX.</p>
+</div>
+#+end_export
+
+Some text after the block.`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`<div className="alert alert-info">
+  <h3>Important Notice</h3>
+  <p>This is a multi-line HTML block that gets converted to JSX.</p>
+</div>
+
+Some text after the block.`);
+  });
+
+  it('should handle multiple #+begin_export html blocks', async () => {
+    const orgContent = `First block:
+
+#+begin_export html
+<button class="btn btn-primary">Click me</button>
+#+end_export
+
+Second block:
+
+#+begin_export html
+<span style="color: red;">Red text</span>
+#+end_export`;
+
+    const result = await convertOrgToMdx(orgContent, 'test');
+
+    expect(result.markdown).toBe(`First block:
+
+<button className="btn btn-primary">Click me</button>
+
+Second block:
+
+<span style={{ color: "red" }}>Red text</span>`);
+  });
+
   describe('extractOrgKeywords', () => {
     it('should extract TITLE keyword', () => {
       const orgContent = `#+TITLE: Test Title
