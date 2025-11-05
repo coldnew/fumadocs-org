@@ -36,7 +36,7 @@
 - **Task Numbering**: If creating a new task, use sequential numbering (e.g., 0002-xxx.md after 0001-xxx.md)
 - **Task Creation**: Only create task files when explicitly approved by the user
 - **Task File Access**: Only read task files in the tasks/ folder that have not been committed yet
-- **Task Format**: Use checkbox format (- [ ]) for task items in the Tasks section
+- **Task Format**: Use checkbox format (- [X]) for completed tasks and (- [ ]) for pending tasks in the Tasks section
 - **Pre-commit Review**: Before committing implementation, re-review whether the task description matches the current implementation. If deciding not to follow the task implementation, report the reason
 
 - **Task Planning**: Before starting any task, present the task plan to the user and wait for approval before proceeding with development
