@@ -4,6 +4,7 @@ import remarkMdx from 'remark-mdx';
 import { unified } from 'unified';
 import matter from 'gray-matter';
 import type { OrgConversionResult } from '@/lib/org-mode/types';
+import { formatAsOrgTimestamp } from '@/lib/org-mode/time';
 
 /**
  * Convert MDX content to Org-mode with keywords
@@ -22,7 +23,23 @@ export async function convertMdxToOrg(
 
   // Convert frontmatter to Org keywords
   const keywords = Object.entries(frontmatter)
-    .map(([key, value]) => `#+${key.toUpperCase()}: ${value}`)
+    .map(([key, value]) => {
+      let formattedValue = value;
+      // If value is a Date object or ISO string, format as org timestamp
+      if (value instanceof Date) {
+        formattedValue = formatAsOrgTimestamp(value);
+      } else if (
+        typeof value === 'string' &&
+        /^\d{4}-\d{2}-\d{2}/.test(value)
+      ) {
+        // Check if it's an ISO date string
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          formattedValue = formatAsOrgTimestamp(date);
+        }
+      }
+      return `#+${key.toUpperCase()}: ${formattedValue}`;
+    })
     .join('\n');
 
   // Parse MDX

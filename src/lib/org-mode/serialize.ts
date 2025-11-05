@@ -13,6 +13,7 @@ import {
   extractOrgKeywords,
   getCalloutTypeFromOrgType,
 } from '@/lib/org-mode/keywords';
+import { parseTime, formatToISOString } from '@/lib/org-mode/time';
 import { generateDefaultTitle } from '@/lib/org-mode/utils';
 import { processBlocks, restoreBlocks } from '@/lib/org-mode/blocks';
 import {
@@ -62,6 +63,14 @@ export async function convertOrgToMdx(
 ): Promise<ConversionResult> {
   // Extract keywords first before modifying content
   const keywords = extractOrgKeywords(orgContent);
+
+  // Parse date if present
+  if (keywords.date) {
+    const parsedDate = parseTime(keywords.date);
+    if (parsedDate) {
+      keywords.date = formatToISOString(parsedDate);
+    }
+  }
 
   // Set defaults
   if (!keywords.title) {

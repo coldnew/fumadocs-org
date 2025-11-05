@@ -65,6 +65,23 @@ export type {
 } from './types';
 
 // =============================================================================
+// TIME PARSING
+// =============================================================================
+
+/**
+ * Time parsing utilities for org-mode timestamps and Hugo time formats
+ */
+export {
+  parseOrgTimestamp,
+  parseHugoTime,
+  parseTime,
+  formatToISOString,
+  formatAsOrgTimestamp,
+  type OrgTimestamp,
+  type ParsedTimestamp,
+} from './time';
+
+// =============================================================================
 // UTILITIES
 // =============================================================================
 
