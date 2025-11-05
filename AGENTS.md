@@ -80,6 +80,7 @@ The `src/lib/org-mode/` library is organized into clear modules for bidirectiona
 - **`types.ts`** - TypeScript type definitions
 - **`keywords.ts`** - Org keyword extraction and processing
 - **`constants.ts`** - Library constants and patterns
+- **`time.ts`** - Time parsing and formatting utilities for org-mode and Hugo formats
 - **`utils.ts`** - General utility functions
 
 ### Submodules
