@@ -1,5 +1,5 @@
 import type { OrgKeywords } from './types';
-import { PATTERNS, SKIP_KEYWORDS } from './constants';
+import { SKIP_KEYWORDS } from './constants';
 
 /**
  * Extract all Org-mode keywords from content
