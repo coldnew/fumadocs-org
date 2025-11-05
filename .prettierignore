@@ -15,3 +15,7 @@ node_modules/
 # Ignore OS files
 .DS_Store
 Thumbs.db
+
+# Ignore task and plan files
+tasks/
+plans/
