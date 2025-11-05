@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import fs from 'fs';
-import { getEmbeddedChecksum } from './convert-org';
+import { getEmbeddedChecksum } from './org2mdx';
 
 // Mock fs for testing
 vi.mock('fs');
 
-describe('convert-org', () => {
+describe('org2mdx', () => {
   describe('getEmbeddedChecksum', () => {
     it('should extract checksum from frontmatter YAML comment', () => {
       const mockContent = `---
