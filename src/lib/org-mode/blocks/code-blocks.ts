@@ -1,6 +1,6 @@
-import type { CodeBlock } from '../types';
+import type { CodeBlock } from '@/lib/org-mode/types';
 import type { BlockContext } from './types';
-import { MARKERS, PATTERNS, LANGUAGE_MAPPINGS } from '../constants';
+import { MARKERS, PATTERNS, LANGUAGE_MAPPINGS } from '@/lib/org-mode/constants';
 
 /**
  * Parse header arguments from org-mode src block

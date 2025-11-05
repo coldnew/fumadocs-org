@@ -7,7 +7,7 @@ import type {
   ExportBlock,
   CalloutBlock,
   ExampleBlock,
-} from '../types';
+} from '@/lib/org-mode/types';
 
 /**
  * Block processing context

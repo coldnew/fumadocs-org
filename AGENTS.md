@@ -64,3 +64,37 @@
 ## Project Goals
 
 - **MDX First**: Regardless of input formats like org-mode or others, the ultimate goal is to generate MDX that this project can use
+
+## Library Structure
+
+The `src/lib/org-mode/` library is organized into clear modules for bidirectional conversion:
+
+### Core Modules
+
+- **`serialize.ts`** - Org → MDX conversion (serialization)
+- **`deserialize.ts`** - MDX → Org conversion (deserialization)
+- **`converter.ts`** - Legacy converter (deprecated, functions moved to serialize/deserialize)
+
+### Supporting Modules
+
+- **`types.ts`** - TypeScript type definitions
+- **`keywords.ts`** - Org keyword extraction and processing
+- **`constants.ts`** - Library constants and patterns
+- **`utils.ts`** - General utility functions
+
+### Submodules
+
+- **`blocks/`** - Modular block processing system
+- **`plugins/`** - Unified plugins for AST transformations
+
+### API Usage
+
+```typescript
+import { convertOrgToMdx, convertMdxToOrg } from '@/lib/org-mode';
+
+// Serialize: Org → MDX
+const mdx = await convertOrgToMdx(orgContent, filename);
+
+// Deserialize: MDX → Org
+const org = await convertMdxToOrg(mdxContent, filename);
+```

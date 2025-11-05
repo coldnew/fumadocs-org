@@ -1,6 +1,6 @@
-import type { LatexBlock } from '../types';
+import type { LatexBlock } from '@/lib/org-mode/types';
 import type { BlockContext } from './types';
-import { MARKERS } from '../constants';
+import { MARKERS } from '@/lib/org-mode/constants';
 
 /**
  * Process LaTeX blocks in org content

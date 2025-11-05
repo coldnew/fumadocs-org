@@ -1,5 +1,10 @@
 import { visit } from 'unist-util-visit';
-import type { AstNode, PluginContext, ParagraphNode, LinkNode } from '../types';
+import type {
+  AstNode,
+  PluginContext,
+  ParagraphNode,
+  LinkNode,
+} from '@/lib/org-mode/types';
 
 /**
  * Function to convert Org AST to HTML text (used for captions)

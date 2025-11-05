@@ -1,5 +1,5 @@
 import { visit } from 'unist-util-visit';
-import type { AstNode, PluginContext } from '../types';
+import type { AstNode, PluginContext } from '@/lib/org-mode/types';
 
 /**
  * Custom rehype plugin to handle math, captions and table alignment

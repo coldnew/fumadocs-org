@@ -1,6 +1,6 @@
-import type { JsxBlock } from '../types';
+import type { JsxBlock } from '@/lib/org-mode/types';
 import type { BlockContext } from './types';
-import { MARKERS } from '../constants';
+import { MARKERS } from '@/lib/org-mode/constants';
 
 /**
  * Process JSX blocks in org content
