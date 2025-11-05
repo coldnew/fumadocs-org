@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <RootProvider
           search={{
             options: {
-              type: 'static', // Enables static search mode
+              ...(process.env.NODE_ENV !== 'development' && { type: 'static' }),
               api: '/api/search',
             },
           }}

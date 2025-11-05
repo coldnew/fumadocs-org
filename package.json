@@ -9,6 +9,7 @@
     "start": "next start",
     "postinstall": "fumadocs-mdx",
     "prebuild": "tsx scripts/convert-org.ts",
+    "postbuild": "node scripts/postbuild.js",
     "org2mdx": "tsx scripts/org2mdx.ts",
     "test": "vitest",
     "test:ui": "vitest --ui",
