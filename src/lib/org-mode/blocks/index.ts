@@ -9,6 +9,7 @@ import {
   restoreExportHtmlBlocks,
   restoreExportBlocks,
 } from './export-blocks';
+import { processDrawerBlocks, restoreDrawerBlocks } from './drawer-blocks';
 
 /**
  * Block processor registry
@@ -38,6 +39,10 @@ export const blockProcessors: BlockRegistry = {
     process: processExportBlocks,
     restore: restoreExportBlocks,
   },
+  drawer: {
+    process: processDrawerBlocks,
+    restore: restoreDrawerBlocks,
+  },
 };
 
 /**
@@ -53,6 +58,7 @@ export function processBlocks(content: string, context: BlockContext): string {
   result = blockProcessors.jsx.process(result, context);
   result = blockProcessors.exportHtml.process(result, context);
   result = blockProcessors.export.process(result, context);
+  result = blockProcessors.drawer.process(result, context);
 
   return result;
 }
@@ -64,6 +70,7 @@ export function restoreBlocks(markdown: string, context: BlockContext): string {
   let result = markdown;
 
   // Restore blocks in reverse order
+  result = blockProcessors.drawer.restore(result, context);
   result = blockProcessors.export.restore(result, context);
   result = blockProcessors.exportHtml.restore(result, context);
   result = blockProcessors.jsx.restore(result, context);
