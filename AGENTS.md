@@ -38,6 +38,7 @@
 - **Task File Access**: Only read task files in the tasks/ folder that have not been committed yet
 - **Task Format**: Use checkbox format (- [X]) for completed tasks and (- [ ]) for pending tasks in the Tasks section
 - **Pre-commit Review**: Before committing implementation, re-review whether the task description matches the current implementation. If deciding not to follow the task implementation, report the reason
+- **Session Summary**: Before committing, update the current uncommitted task file with a detailed session summary and implement any remaining details
 
 - **Task Planning**: Before starting any task, present the task plan to the user and wait for approval before proceeding with development
 
