@@ -5,6 +5,7 @@
 
 * Introduction
 
+#+HTML: <!--more-->
 This document tests various Org-mode features to ensure proper conversion to MDX.
 
 * Mathematical Formulas
