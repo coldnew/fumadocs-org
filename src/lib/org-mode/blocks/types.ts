@@ -37,3 +37,28 @@ export interface BlockProcessor {
 export interface BlockRegistry {
   [key: string]: BlockProcessor;
 }
+
+/**
+ * Create a block context with all arrays initialized
+ */
+export function createBlockContext(): BlockContext {
+  return {
+    codeBlocks: [],
+    latexBlocks: [],
+    htmlBlocks: [],
+    jsxBlocks: [],
+    exportHtmlBlocks: [],
+    exportBlocks: [],
+    calloutBlocks: [],
+    exampleBlocks: [],
+  };
+}
+
+/**
+ * Create a test block context with optional updates
+ */
+export function createTestBlockContext(
+  updates: Partial<BlockContext> = {},
+): BlockContext {
+  return { ...createBlockContext(), ...updates };
+}

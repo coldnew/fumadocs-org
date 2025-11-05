@@ -6,12 +6,9 @@ import remarkStringify from 'remark-stringify';
 import { unified } from 'unified';
 import { visit } from 'unist-util-visit';
 import matter from 'gray-matter';
-import type {
-  ConversionOptions,
-  ConversionResult,
-  PluginContext,
-} from '@/lib/org-mode/types';
-import type { BlockContext } from '@/lib/org-mode/blocks/types';
+import type { ConversionOptions, ConversionResult } from '@/lib/org-mode/types';
+import { createBlockContext } from '@/lib/org-mode/blocks/types';
+import { createPluginContext } from '@/lib/org-mode/types';
 import {
   extractOrgKeywords,
   getCalloutTypeFromOrgType,
@@ -76,22 +73,10 @@ export async function convertOrgToMdx(
   }
 
   // Create block context for modular processing
-  const blockContext: BlockContext = {
-    codeBlocks: [],
-    latexBlocks: [],
-    htmlBlocks: [],
-    jsxBlocks: [],
-    exportHtmlBlocks: [],
-    exportBlocks: [],
-    calloutBlocks: [],
-    exampleBlocks: [],
-  };
+  const blockContext = createBlockContext();
 
   // Create plugin context for modular plugins
-  const pluginContext: PluginContext = {
-    tableAlignments: [],
-    captions: [],
-  };
+  const pluginContext = createPluginContext();
 
   // Process all blocks using the modular system
   orgContent = processBlocks(orgContent, blockContext);

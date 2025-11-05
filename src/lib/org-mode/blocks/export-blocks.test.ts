@@ -6,6 +6,7 @@ import {
   restoreExportBlocks,
 } from './export-blocks';
 import type { BlockContext } from './types';
+import { createBlockContext, createTestBlockContext } from './types';
 
 describe('processExportHtmlBlocks', () => {
   it('should process HTML export blocks', () => {
@@ -13,16 +14,7 @@ describe('processExportHtmlBlocks', () => {
 <div class="test">content</div>
 #+end_export`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processExportHtmlBlocks(content, context);
 
@@ -39,16 +31,7 @@ describe('processExportHtmlBlocks', () => {
 <div class="test">content</div>
 #+end_export`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processExportHtmlBlocks(content, context);
 
@@ -65,16 +48,7 @@ describe('processExportHtmlBlocks', () => {
 <div>second</div>
 #+end_export`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processExportHtmlBlocks(content, context);
 
@@ -91,16 +65,7 @@ EXPORTHTMLMARKER1`);
 
 #+end_export`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     processExportHtmlBlocks(content, context);
 
@@ -115,16 +80,7 @@ describe('processExportBlocks', () => {
 Some content
 #+end_export`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processExportBlocks(content, context);
 
@@ -142,16 +98,7 @@ Some content
 <div>content</div>
 #+end_export`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processExportBlocks(content, context);
 
@@ -164,16 +111,7 @@ Some content
 # Header
 #+end_export`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processExportBlocks(content, context);
 
@@ -186,16 +124,7 @@ Some content
 <div>JSX content</div>
 #+end_export`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processExportBlocks(content, context);
 
@@ -214,16 +143,7 @@ Some content
 
 #+end_export`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     processExportBlocks(content, context);
 
@@ -233,21 +153,14 @@ Some content
 
 describe('restoreExportHtmlBlocks', () => {
   it('should restore HTML export blocks', () => {
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
+    const context = createTestBlockContext({
       exportHtmlBlocks: [
         {
           html: '<div class="test">content</div>',
           index: 0,
         },
       ],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    });
 
     const markdown = 'EXPORTHTMLMARKER0';
     const result = restoreExportHtmlBlocks(markdown, context);
@@ -256,19 +169,12 @@ describe('restoreExportHtmlBlocks', () => {
   });
 
   it('should handle multiple markers', () => {
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
+    const context = createTestBlockContext({
       exportHtmlBlocks: [
         { html: '<div>first</div>', index: 0 },
         { html: '<div>second</div>', index: 1 },
       ],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    });
 
     const markdown = `EXPORTHTMLMARKER0
 
@@ -281,16 +187,7 @@ EXPORTHTMLMARKER1`;
   });
 
   it('should return empty string for invalid markers', () => {
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const markdown = 'EXPORTHTMLMARKER0';
     const result = restoreExportHtmlBlocks(markdown, context);
@@ -301,12 +198,7 @@ EXPORTHTMLMARKER1`;
 
 describe('restoreExportBlocks', () => {
   it('should restore generic export blocks', () => {
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
+    const context = createTestBlockContext({
       exportBlocks: [
         {
           content: '# Header\nSome content',
@@ -314,9 +206,7 @@ describe('restoreExportBlocks', () => {
           index: 0,
         },
       ],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    });
 
     const markdown = 'EXPORTBLOCKMARKER0';
     const result = restoreExportBlocks(markdown, context);
@@ -325,19 +215,12 @@ describe('restoreExportBlocks', () => {
   });
 
   it('should handle multiple markers', () => {
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
+    const context = createTestBlockContext({
       exportBlocks: [
         { content: 'JSX content', type: 'jsx', index: 0 },
         { content: 'Markdown content', type: 'markdown', index: 1 },
       ],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    });
 
     const markdown = `EXPORTBLOCKMARKER0
 
@@ -350,16 +233,7 @@ Markdown content`);
   });
 
   it('should return empty string for invalid markers', () => {
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const markdown = 'EXPORTBLOCKMARKER0';
     const result = restoreExportBlocks(markdown, context);

@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { orgCaptions } from './captions';
-import type { PluginContext } from '@/lib/org-mode/types';
+import { createPluginContext, type PluginContext } from '@/lib/org-mode/types';
 
 describe('orgCaptions', () => {
   it('should extract captions from nodes with affiliated CAPTION', () => {
-    const context: PluginContext = { tableAlignments: [], captions: [] };
+    const context = createPluginContext();
     const plugin = orgCaptions(context);
 
     const tree = {
@@ -28,7 +28,7 @@ describe('orgCaptions', () => {
   });
 
   it('should handle captions with formatting', () => {
-    const context: PluginContext = { tableAlignments: [], captions: [] };
+    const context = createPluginContext();
     const plugin = orgCaptions(context);
 
     const tree = {
@@ -62,7 +62,7 @@ describe('orgCaptions', () => {
   });
 
   it('should handle code and verbatim in captions', () => {
-    const context: PluginContext = { tableAlignments: [], captions: [] };
+    const context = createPluginContext();
     const plugin = orgCaptions(context);
 
     const tree = {
@@ -96,7 +96,7 @@ describe('orgCaptions', () => {
   });
 
   it('should handle multiple captions', () => {
-    const context: PluginContext = { tableAlignments: [], captions: [] };
+    const context = createPluginContext();
     const plugin = orgCaptions(context);
 
     const tree = {
@@ -128,7 +128,7 @@ describe('orgCaptions', () => {
   });
 
   it('should remove affiliated data after processing', () => {
-    const context: PluginContext = { tableAlignments: [], captions: [] };
+    const context = createPluginContext();
     const plugin = orgCaptions(context);
 
     const node = {
@@ -150,10 +150,8 @@ describe('orgCaptions', () => {
   });
 
   it('should initialize captions array', () => {
-    const context: PluginContext = {
-      tableAlignments: [],
-      captions: [{ index: 0, caption: 'existing' }],
-    };
+    const context = createPluginContext();
+    context.captions = [{ index: 0, caption: 'existing' }];
     const plugin = orgCaptions(context);
 
     const tree = {

@@ -71,6 +71,18 @@ export interface ElementNode extends AstNode {
 export interface PluginContext {
   tableAlignments: Array<{ index: number; alignments: (string | null)[] }>;
   captions: Array<{ index: number; caption: string }>;
+  checkboxes: Array<{ index: number; checked: boolean }>;
+}
+
+/**
+ * Create a plugin context with all arrays initialized
+ */
+export function createPluginContext(): PluginContext {
+  return {
+    tableAlignments: [],
+    captions: [],
+    checkboxes: [],
+  };
 }
 
 // Block processing types

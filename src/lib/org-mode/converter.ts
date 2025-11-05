@@ -12,11 +12,11 @@ import type {
   ConversionOptions,
   ConversionResult,
   OrgConversionResult,
-  PluginContext,
 } from './types';
 import { generateDefaultTitle } from './utils';
 import { processBlocks, restoreBlocks } from './blocks';
-import type { BlockContext } from './blocks/types';
+import { createBlockContext } from './blocks/types';
+import { createPluginContext } from './types';
 import {
   orgCaptions,
   orgCheckboxes,
@@ -104,22 +104,10 @@ export async function convertOrgToMdx(
   }
 
   // Create block context for modular processing
-  const blockContext: BlockContext = {
-    codeBlocks: [],
-    latexBlocks: [],
-    htmlBlocks: [],
-    jsxBlocks: [],
-    exportHtmlBlocks: [],
-    exportBlocks: [],
-    calloutBlocks: [],
-    exampleBlocks: [],
-  };
+  const blockContext = createBlockContext();
 
   // Create plugin context for modular plugins
-  const pluginContext: PluginContext = {
-    tableAlignments: [],
-    captions: [],
-  };
+  const pluginContext = createPluginContext();
 
   // Process all blocks using the modular system
   orgContent = processBlocks(orgContent, blockContext);

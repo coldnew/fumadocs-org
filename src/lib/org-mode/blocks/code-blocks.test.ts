@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { processCodeBlocks, restoreCodeBlocks } from './code-blocks';
 import type { BlockContext } from './types';
+import { createBlockContext, createTestBlockContext } from './types';
 
 describe('processCodeBlocks', () => {
   it('should process basic code blocks', () => {
@@ -8,16 +9,7 @@ describe('processCodeBlocks', () => {
 console.log("hello");
 #+end_src`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processCodeBlocks(content, context);
 
@@ -31,19 +23,11 @@ console.log("hello");
 
   it('should process code blocks without language', () => {
     const content = `#+begin_src
-some code
+
+console.log('hello');
 #+end_src`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processCodeBlocks(content, context);
 
@@ -59,16 +43,7 @@ some code
 This is text content
 #+end_src`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processCodeBlocks(content, context);
 
@@ -85,16 +60,7 @@ This is text content
 Some content
 #+end_src`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processCodeBlocks(content, context);
 
@@ -114,16 +80,7 @@ console.log("first");
 print("second")
 #+end_src`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processCodeBlocks(content, context);
 
@@ -144,16 +101,7 @@ console.log("nested");
 End of outer block
 #+end_src`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processCodeBlocks(content, context);
 
@@ -171,16 +119,7 @@ code here
 
 Some text after`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processCodeBlocks(content, context);
 
@@ -196,16 +135,7 @@ Some text after`);
 import defaultComponents from 'fumadocs-ui/mdx';
 #+end_src`;
 
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const result = processCodeBlocks(content, context);
 
@@ -222,7 +152,7 @@ import defaultComponents from 'fumadocs-ui/mdx';
 
 describe('restoreCodeBlocks', () => {
   it('should restore basic code blocks', () => {
-    const context: BlockContext = {
+    const context = createTestBlockContext({
       codeBlocks: [
         {
           original: `#+begin_src javascript
@@ -231,14 +161,7 @@ console.log("hello");
           lang: 'javascript',
         },
       ],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    });
 
     const markdown = 'CODEBLOCKMARKER0';
     const result = restoreCodeBlocks(markdown, context);
@@ -249,7 +172,7 @@ console.log("hello");
   });
 
   it('should restore code blocks without language', () => {
-    const context: BlockContext = {
+    const context = createTestBlockContext({
       codeBlocks: [
         {
           original: `#+begin_src
@@ -258,14 +181,7 @@ some code
           lang: '',
         },
       ],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    });
 
     const markdown = 'CODEBLOCKMARKER0';
     const result = restoreCodeBlocks(markdown, context);
@@ -276,7 +192,7 @@ some code
   });
 
   it('should restore text blocks', () => {
-    const context: BlockContext = {
+    const context = createTestBlockContext({
       codeBlocks: [
         {
           original: `#+begin_src text
@@ -285,14 +201,7 @@ This is text content
           lang: 'text',
         },
       ],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    });
 
     const markdown = 'CODEBLOCKMARKER0';
     const result = restoreCodeBlocks(markdown, context);
@@ -435,16 +344,7 @@ End outer
   });
 
   it('should return empty string for invalid markers', () => {
-    const context: BlockContext = {
-      codeBlocks: [],
-      latexBlocks: [],
-      htmlBlocks: [],
-      jsxBlocks: [],
-      exportHtmlBlocks: [],
-      exportBlocks: [],
-      calloutBlocks: [],
-      exampleBlocks: [],
-    };
+    const context = createBlockContext();
 
     const markdown = 'CODEBLOCKMARKER0';
     const result = restoreCodeBlocks(markdown, context);
