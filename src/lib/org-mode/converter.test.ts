@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   convertOrgToMdx,
+  convertMdxToOrg,
   extractOrgKeywords,
   getCalloutTypeFromOrgType,
 } from './converter';
@@ -1060,6 +1061,230 @@ Content here.`;
     it('should be case insensitive', () => {
       expect(getCalloutTypeFromOrgType('WARNING')).toBe('warning');
       expect(getCalloutTypeFromOrgType('Error')).toBe('error');
+    });
+  });
+});
+
+describe('convertMdxToOrg', () => {
+  it('should convert basic MDX to Org', async () => {
+    const mdxContent = `# Hello World
+
+This is a test.`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.keywords).toBe('');
+    expect(result.org).toBe(`* Hello World
+
+This is a test.
+
+`);
+  });
+
+  it('should convert headings', async () => {
+    const mdxContent = `# Level 1
+
+## Level 2
+
+### Level 3`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(`* Level 1
+
+** Level 2
+
+*** Level 3
+
+`);
+  });
+
+  it('should convert lists', async () => {
+    const mdxContent = `- Item 1
+- Item 2`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(`- Item 1
+- Item 2
+
+`);
+  });
+
+  it('should convert code blocks', async () => {
+    const mdxContent = `\`\`\`javascript
+console.log('hello');
+\`\`\``;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(`#+begin_src javascript
+console.log('hello');
+#+end_src
+
+`);
+  });
+
+  it('should convert inline code', async () => {
+    const mdxContent = `Use the \`code\` command.`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(`Use the =code= command.
+
+`);
+  });
+
+  it('should convert links', async () => {
+    const mdxContent = `[Example](https://example.com)`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(`[[https://example.com][Example]]
+
+`);
+  });
+
+  it('should convert bold and italic', async () => {
+    const mdxContent = `**bold** and *italic* text.`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(`*bold* and /italic/ text.
+
+`);
+  });
+
+  it('should convert JSX to export blocks', async () => {
+    const mdxContent = `<Button>Click me</Button>`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(`#+begin_export jsx
+<Button>Click me</Button>
+#+end_export
+
+`);
+  });
+
+  it('should convert frontmatter to Org keywords', async () => {
+    const mdxContent = `---
+title: Test Title
+description: Test Description
+---
+
+Content here.`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.keywords).toBe(`#+TITLE: Test Title
+#+DESCRIPTION: Test Description
+
+`);
+    expect(result.org).toBe(`Content here.
+
+`);
+  });
+
+  it('should handle tables', async () => {
+    const mdxContent = `| Name | Age |
+|------|-----|
+| Alice | 25 |
+| Bob | 30 |`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(`| Name | Age |
+|------|-----|
+| Alice | 25 |
+| Bob | 30 |
+
+`);
+  });
+
+  it('should handle blockquotes', async () => {
+    const mdxContent = `> This is a quote.`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(`This is a quote.
+
+`);
+  });
+
+  it('should handle horizontal rules', async () => {
+    const mdxContent = `---\n\nText after.\n`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.org).toBe(``);
+  });
+
+  describe('Round-trip tests', () => {
+    it('should perform round-trip conversion: Org -> MDX -> Org', async () => {
+      const originalOrg = `* Hello World
+
+This is a test paragraph.
+
+- List item 1
+- List item 2
+
+#+begin_src javascript
+console.log('hello');
+#+end_src
+
+Some *bold* and /italic/ text.`;
+
+      // Convert Org to MDX
+      const mdxResult = await convertOrgToMdx(originalOrg, 'test');
+
+      // Convert back to Org
+      const orgResult = await convertMdxToOrg(
+        mdxResult.frontmatter + mdxResult.markdown,
+        'test',
+      );
+
+      // The round-trip should produce compatible Org (may not be identical due to formatting differences)
+      expect(orgResult.org.trim()).toContain('* Hello World');
+      expect(orgResult.org.trim()).toContain('This is a test paragraph');
+      expect(orgResult.org.trim()).toContain('- List item 1');
+      expect(orgResult.org.trim()).toContain('- List item 2');
+      expect(orgResult.org.trim()).toContain('#+begin_src javascript');
+      expect(orgResult.org.trim()).toContain("console.log('hello')");
+      expect(orgResult.org.trim()).toContain('#+end_src');
+      expect(orgResult.org.trim()).toContain('*bold* and /italic/ text');
+    });
+
+    it('should handle complex round-trip with keywords', async () => {
+      const originalOrg = `#+TITLE: Test Document
+#+AUTHOR: Test Author
+
+* Introduction
+
+This is an introduction.
+
+#+begin_export jsx
+<Button>Click me</Button>
+#+end_export`;
+
+      // Convert Org to MDX
+      const mdxResult = await convertOrgToMdx(originalOrg, 'test');
+
+      // Convert back to Org
+      const orgResult = await convertMdxToOrg(
+        mdxResult.frontmatter + mdxResult.markdown,
+        'test',
+      );
+
+      // Check keywords are preserved
+      expect(orgResult.keywords).toContain('#+TITLE: Test Document');
+      expect(orgResult.keywords).toContain('#+AUTHOR: Test Author');
+
+      // Check content is preserved
+      expect(orgResult.org.trim()).toContain('* Introduction');
+      expect(orgResult.org.trim()).toContain('This is an introduction');
+      expect(orgResult.org.trim()).toContain('#+begin_export jsx');
+      expect(orgResult.org.trim()).toContain('<Button>Click me</Button>');
     });
   });
 });

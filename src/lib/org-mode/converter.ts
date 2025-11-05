@@ -4,11 +4,14 @@ import uniorg2rehype from 'uniorg-rehype';
 import rehype2remark from 'rehype-remark';
 import remarkGfm from 'remark-gfm';
 import remarkStringify from 'remark-stringify';
+import remarkParse from 'remark-parse';
+import remarkMdx from 'remark-mdx';
 import { visit } from 'unist-util-visit';
 import matter from 'gray-matter';
 import type {
   ConversionOptions,
   ConversionResult,
+  OrgConversionResult,
   PluginContext,
 } from './types';
 import { generateDefaultTitle } from './utils';
@@ -214,4 +217,155 @@ export async function convertOrgToMdx(
     frontmatter,
     markdown,
   };
+}
+
+/**
+ * Convert MDX content to Org-mode with keywords
+ */
+export async function convertMdxToOrg(
+  mdxContent: string,
+  filename: string,
+): Promise<OrgConversionResult> {
+  // Extract frontmatter
+  const { data: frontmatter, content: mdxWithoutFrontmatter } =
+    matter(mdxContent);
+
+  // Convert frontmatter to Org keywords
+  const keywords = Object.entries(frontmatter)
+    .map(([key, value]) => `#+${key.toUpperCase()}: ${value}`)
+    .join('\n');
+
+  // Parse MDX
+  const processor = unified().use(remarkParse).use(remarkGfm).use(remarkMdx);
+
+  const tree = processor.parse(mdxWithoutFrontmatter + '\n');
+
+  // Convert AST to Org
+  const orgContent = astToOrg(tree);
+
+  return {
+    keywords: keywords ? keywords + '\n\n' : '',
+    org: orgContent,
+  };
+}
+
+/**
+ * Convert MDX AST to Org syntax
+ */
+function astToOrg(node: any): string {
+  switch (node.type) {
+    case 'root':
+      return node.children.map(astToOrg).join('');
+    case 'heading':
+      return (
+        '*'.repeat(node.depth) +
+        ' ' +
+        node.children.map(astToOrg).join('') +
+        '\n\n'
+      );
+    case 'paragraph':
+      return node.children.map(astToOrg).join('') + '\n\n';
+    case 'text':
+      return node.value;
+    case 'list':
+      return node.children.map(astToOrg).join('') + '\n';
+    case 'listItem':
+      return (
+        '- ' +
+        node.children.map((child: any) => astToOrg(child).trimEnd()).join('') +
+        '\n'
+      );
+    case 'code':
+      if (node.lang) {
+        return `#+begin_src ${node.lang}\n${node.value}\n#+end_src\n\n`;
+      } else {
+        return `#+begin_example\n${node.value}\n#+end_example\n\n`;
+      }
+    case 'inlineCode':
+      return `=${node.value}=`;
+    case 'link':
+      return `[[${node.url}][${node.children.map(astToOrg).join('')}]]`;
+    case 'strong':
+      return '*' + node.children.map(astToOrg).join('') + '*';
+    case 'emphasis':
+      return '/' + node.children.map(astToOrg).join('') + '/';
+    case 'mdxJsxFlowElement':
+      return `#+begin_export jsx\n${mdxJsxToString(node)}\n#+end_export\n\n`;
+    case 'mdxJsxTextElement':
+      return `#+begin_export jsx\n${mdxJsxToString(node)}\n#+end_export`;
+    case 'blockquote':
+      return (
+        node.children.map((child: any) => astToOrg(child).trimEnd()).join('') +
+        '\n\n'
+      );
+    case 'thematicBreak':
+      return '-----\n\n';
+    case 'table':
+      const rows = node.children.map(
+        (row: any) =>
+          '| ' +
+          row.children
+            .map((cell: any) => cell.children.map(astToOrg).join(''))
+            .join(' | ') +
+          ' |\n',
+      );
+      // Add separator row after header
+      if (rows.length > 0) {
+        const headerRow = node.children[0];
+        const separatorParts = headerRow.children.map((cell: any) => {
+          const content = cell.children.map(astToOrg).join('');
+          return '-'.repeat(content.length + 2); // +2 for spaces around content
+        });
+        const separator = '|' + separatorParts.join('|') + '|\n';
+        rows.splice(1, 0, separator);
+      }
+      return rows.join('') + '\n';
+    default:
+      return '';
+  }
+}
+
+/**
+ * Convert child nodes to Org
+ */
+function childToOrg(node: any): string {
+  switch (node.type) {
+    case 'text':
+      return node.value;
+    case 'strong':
+      return '*' + node.children.map(childToOrg).join('') + '*';
+    case 'emphasis':
+      return '/' + node.children.map(childToOrg).join('') + '/';
+    case 'inlineCode':
+      return `=${node.value}=`;
+    case 'link':
+      return `[[${node.url}][${node.children.map(childToOrg).join('')}]]`;
+    case 'mdxJsxTextElement':
+      return `#+begin_export jsx\n${mdxJsxToString(node)}\n#+end_export`;
+    default:
+      return '';
+  }
+}
+
+/**
+ * Convert MDX JSX element to string
+ */
+function mdxJsxToString(node: any): string {
+  let jsx = '<' + node.name;
+  if (node.attributes) {
+    jsx += node.attributes
+      .map((attr: any) => {
+        if (attr.type === 'mdxJsxAttribute') {
+          return ` ${attr.name}${attr.value ? `="${attr.value}"` : ''}`;
+        }
+        return '';
+      })
+      .join('');
+  }
+  jsx += '>';
+  if (node.children) {
+    jsx += node.children.map(childToOrg).join('');
+  }
+  jsx += `</${node.name}>`;
+  return jsx;
 }

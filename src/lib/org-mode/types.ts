@@ -17,6 +17,11 @@ export interface ConversionResult {
   markdown: string;
 }
 
+export interface OrgConversionResult {
+  keywords: string;
+  org: string;
+}
+
 // AST Node types for better type safety
 export interface AstNode {
   type: string;

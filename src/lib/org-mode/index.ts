@@ -1,8 +1,9 @@
-export { convertOrgToMdx } from './converter';
+export { convertOrgToMdx, convertMdxToOrg } from './converter';
 export type {
   OrgKeywords,
   ConversionOptions,
   ConversionResult,
+  OrgConversionResult,
   AstNode,
   PluginContext,
   CodeBlock,

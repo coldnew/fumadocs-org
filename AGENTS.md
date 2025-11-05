@@ -10,6 +10,7 @@
 - **Format Check**: `npm run format:check`
 - **Type Check**: `npx tsc --noEmit`
 - **Single Test**: `node scripts/test-<name>.js` or `tsx scripts/test-<name>.ts`
+- **Convert MDX to Org**: `npm run org2mdx <mdx-file> [output-org-file]`
 
 ## Code Style
 
