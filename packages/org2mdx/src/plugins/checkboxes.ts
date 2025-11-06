@@ -1,10 +1,6 @@
 import { visit } from 'unist-util-visit';
-import type {
-  AstNode,
-  PluginContext,
-  CheckboxItem,
-} from '@/lib/org-mode/types';
-import { PATTERNS } from '@/lib/org-mode/constants';
+import type { AstNode, PluginContext, CheckboxItem } from '../types';
+import { PATTERNS } from '../constants';
 
 /**
  * Plugin to handle Org checkboxes in list items

@@ -4,7 +4,7 @@ import type {
   CheckboxItem,
   TableAlignmentInfo,
   CaptionInfo,
-} from '@/lib/org-mode/types';
+} from '../types';
 
 /**
  * Plugin function signature

@@ -1,7 +1,7 @@
 import { htmlToJsx } from 'html-to-jsx-transform';
-import type { ExportHtmlBlock, ExportBlock } from '@/lib/org-mode/types';
+import type { ExportHtmlBlock, ExportBlock } from '../types';
 import type { BlockContext } from './types';
-import { MARKERS } from '@/lib/org-mode/constants';
+import { MARKERS } from '../constants';
 
 /**
  * Process export HTML blocks in org content

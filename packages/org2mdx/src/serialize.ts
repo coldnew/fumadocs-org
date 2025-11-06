@@ -12,23 +12,20 @@ import type {
   ConversionOptions,
   ConversionResult,
   IncludeBlock,
-} from '@/lib/org-mode/types';
-import { createBlockContext } from '@/lib/org-mode/blocks/types';
-import { createPluginContext } from '@/lib/org-mode/types';
-import {
-  extractOrgKeywords,
-  getCalloutTypeFromOrgType,
-} from '@/lib/org-mode/keywords';
-import { parseTime, formatToISOString } from '@/lib/org-mode/time';
-import { generateDefaultTitle } from '@/lib/org-mode/utils';
-import { processBlocks, restoreBlocks } from '@/lib/org-mode/blocks';
+} from './types';
+import { createBlockContext } from './blocks/types';
+import { createPluginContext } from './types';
+import { extractOrgKeywords, getCalloutTypeFromOrgType } from './keywords';
+import { parseTime, formatToISOString } from './time';
+import { generateDefaultTitle } from './utils';
+import { processBlocks, restoreBlocks } from './blocks';
 import {
   orgCaptions,
   orgCheckboxes,
   orgTableAlignment,
   rehypeCaptionsAndTableAlignment,
   restoreCheckboxes,
-} from '@/lib/org-mode/plugins';
+} from './plugins';
 
 /**
  * Plugin to convert figure elements to HTML strings

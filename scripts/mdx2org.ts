@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { convertMdxToOrg } from '../src/lib/org-mode/index';
+import { convertMdxToOrg } from '../packages/org2mdx/dist/index.js';
 
 /**
  * Convert MDX file to Org format for manual testing

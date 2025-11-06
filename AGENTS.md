@@ -68,7 +68,7 @@
 
 ## Library Structure
 
-The `src/lib/org-mode/` library is organized into clear modules for bidirectional conversion:
+The `packages/org2mdx/` library is organized into clear modules for bidirectional conversion:
 
 ### Core Modules
 
@@ -92,7 +92,7 @@ The `src/lib/org-mode/` library is organized into clear modules for bidirectiona
 ### API Usage
 
 ```typescript
-import { convertOrgToMdx, convertMdxToOrg } from '@/lib/org-mode';
+import { convertOrgToMdx, convertMdxToOrg } from '@/packages/org2mdx';
 
 // Serialize: Org → MDX
 const mdx = await convertOrgToMdx(orgContent, filename);

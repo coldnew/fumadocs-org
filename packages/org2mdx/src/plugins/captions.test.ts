@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { orgCaptions } from './captions';
-import { createPluginContext, type PluginContext } from '@/lib/org-mode/types';
+import { createPluginContext, type PluginContext } from '../types';
 
 describe('orgCaptions', () => {
   it('should extract captions from nodes with affiliated CAPTION', () => {

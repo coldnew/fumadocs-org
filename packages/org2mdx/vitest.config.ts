@@ -8,13 +8,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'dist/', 'scripts/', 'content/'],
+      exclude: ['node_modules/', 'dist/', 'src/'],
     },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@/packages': path.resolve(__dirname, './packages'),
     },
   },
 });

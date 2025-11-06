@@ -3,8 +3,8 @@ import remarkGfm from 'remark-gfm';
 import remarkMdx from 'remark-mdx';
 import { unified } from 'unified';
 import matter from 'gray-matter';
-import type { OrgConversionResult } from '@/lib/org-mode/types';
-import { formatAsOrgTimestamp } from '@/lib/org-mode/time';
+import type { OrgConversionResult } from './types';
+import { formatAsOrgTimestamp } from './time';
 
 /**
  * Convert MDX content to Org-mode with keywords

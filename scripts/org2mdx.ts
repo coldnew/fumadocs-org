@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { convertOrgToMdx } from '../src/lib/org-mode/index';
+import { convertOrgToMdx } from '../packages/org2mdx/dist/index.js';
 import { globSync } from 'glob';
 
 /**

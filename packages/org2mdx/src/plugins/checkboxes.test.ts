@@ -4,7 +4,7 @@ import {
   extractCheckboxes,
   restoreCheckboxes,
 } from './checkboxes';
-import { createPluginContext, type PluginContext } from '@/lib/org-mode/types';
+import { createPluginContext, type PluginContext } from '../types';
 
 describe('orgCheckboxes plugin', () => {
   it('should add checkbox markers to list items', () => {
