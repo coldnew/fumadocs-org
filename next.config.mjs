@@ -1,6 +1,6 @@
-import { createMDX } from 'fumadocs-mdx/next';
+import { createOrg } from 'fumadocs-org/next';
 
-const withMDX = createMDX();
+const withOrg = createOrg();
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -10,4 +10,4 @@ const config = {
   reactStrictMode: true,
 };
 
-export default withMDX(config);
+export default withOrg(config);

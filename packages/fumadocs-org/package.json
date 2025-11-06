@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "bin": "./dist/bin.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -12,9 +13,14 @@
       "require": "./dist/index.js"
     },
     "./next": {
-      "types": "./dist/next.d.ts",
-      "import": "./dist/next.mjs",
-      "require": "./dist/next.js"
+      "types": "./dist/next/index.d.ts",
+      "import": "./dist/next/index.mjs",
+      "require": "./dist/next/index.js"
+    },
+    "./runtime/next": {
+      "types": "./dist/runtime/next/index.d.ts",
+      "import": "./dist/runtime/next/index.mjs",
+      "require": "./dist/runtime/next/index.js"
     },
     "./loader-org": "./loader-org.cjs"
   },
@@ -34,6 +40,9 @@
   ],
   "author": "",
   "license": "MIT",
+  "dependencies": {
+    "tinyglobby": "^0.2.15"
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/webpack": "^5.0.0",

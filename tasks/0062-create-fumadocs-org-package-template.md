@@ -17,6 +17,8 @@ Create a template Node.js package named `fumadocs-org` in the `packages/fumadocs
 - [x] Create createOrg function mirroring createMDX for Next.js integration
 - [x] Add webpack/turbopack rules for .org file processing
 - [x] Set up package exports for next and loader-org
+- [x] Implement createOrgSource runtime function for source generation
+- [x] Add runtime/next exports for source API integration
 
 ## Implementation Details
 
@@ -24,8 +26,15 @@ Create a template Node.js package named `fumadocs-org` in the `packages/fumadocs
 ```
 packages/fumadocs-org/
 ├── src/
-│   └── index.ts                    # Main entry point
+│   ├── core.ts                     # Core functionality
+│   ├── index.ts                    # Main entry point
+│   ├── index.test.ts               # Tests
+│   ├── loaders/
+│   │   └── org.ts                  # Org-mode loader
+│   └── next/
+│       └── index.ts                # Next.js integration
 ├── .gitignore                      # Git ignore rules
+├── loader-org.cjs                  # Webpack loader entry
 ├── package.json                    # Package configuration
 ├── tsconfig.json                   # TypeScript configuration
 ├── tsup.config.ts                  # Build configuration
@@ -59,8 +68,10 @@ Successfully implemented fumadocs-org package for Org-mode support in Fumadocs:
 - Added webpack/turbopack rules to process .org files (org loader → fumadocs-mdx loader)
 - Set up proper package exports for next and loader-org functionality
 - Added .gitignore and ESLint configuration following workspace conventions
+- Organized code into logical directories: src/next/, src/loaders/
+- Fixed linting errors by removing unused functions and improving type safety
 - Verified build, test, lint, and typecheck all pass
 - Package integrates with existing fumadocs-mdx without file system writes
 
 ## Next Steps
-After creating the template, implement core functionality for Fumadocs integration with Org-mode processing.
+Package template is complete and ready for use. The fumadocs-org package provides a foundation for integrating Fumadocs with Org-mode files.
