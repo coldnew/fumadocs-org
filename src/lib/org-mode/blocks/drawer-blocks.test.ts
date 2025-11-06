@@ -12,14 +12,11 @@ Some notes content here
 
     const result = processDrawerBlocks(content, context);
 
-    const expected = `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>Notes</AccordionTrigger>
-    <AccordionContent>
+    const expected = `\n\n<Accordions type="single" collapsible>
+  <Accordion title="Notes" id="drawer-0">
 Some notes content here
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 
     expect(result).toBe(expected);
   });
@@ -33,14 +30,11 @@ Content here
 
     const result = processDrawerBlocks(content, context);
 
-    const expected = `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>My Custom Drawer</AccordionTrigger>
-    <AccordionContent>
+    const expected = `\n\n<Accordions type="single" collapsible>
+  <Accordion title="My Custom Drawer" id="drawer-0">
 Content here
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 
     expect(result).toBe(expected);
   });
@@ -58,23 +52,15 @@ Second content
 
     const result = processDrawerBlocks(content, context);
 
-    const expected = `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>First</AccordionTrigger>
-    <AccordionContent>
+    const expected = `\n\n<Accordions type="single" collapsible>
+  <Accordion title="First" id="drawer-0">
 First content
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>
-
-<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-1">
-    <AccordionTrigger>Second</AccordionTrigger>
-    <AccordionContent>
+  </Accordion>
+</Accordions>\n\n\n\n\n\n<Accordions type="single" collapsible>
+  <Accordion title="Second" id="drawer-1">
 Second content
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 
     expect(result).toBe(expected);
   });
@@ -113,14 +99,11 @@ Content
 
     const result = processDrawerBlocks(content, context);
 
-    const expected = `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>My Drawer</AccordionTrigger>
-    <AccordionContent>
+    const expected = `\n\n<Accordions type="single" collapsible>
+  <Accordion title="My Drawer" id="drawer-0">
 Content
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 
     expect(result).toBe(expected);
   });
@@ -135,15 +118,12 @@ Content
 
     const result = processDrawerBlocks(content, context);
 
-    const expected = `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>Notes</AccordionTrigger>
-    <AccordionContent>
+    const expected = `\n\n<Accordions type="single" collapsible>
+  <Accordion title="Notes" id="drawer-0">
   This is indented content
     More indentation
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 
     expect(result).toBe(expected);
   });
@@ -156,14 +136,11 @@ Content
 
     const result = processDrawerBlocks(content, context);
 
-    const expected = `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>Empty</AccordionTrigger>
-    <AccordionContent>
+    const expected = `\n\n<Accordions type="single" collapsible>
+  <Accordion title="Empty" id="drawer-0">
 
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 
     expect(result).toBe(expected);
   });
@@ -179,16 +156,13 @@ Content
 
     const result = processDrawerBlocks(content, context);
 
-    const expected = `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>Details</AccordionTrigger>
-    <AccordionContent>
+    const expected = `\n\n<Accordions type="single" collapsible>
+  <Accordion title="Details" id="drawer-0">
 * Heading in drawer
 - List item 1
 - List item 2
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 
     expect(result).toBe(expected);
   });
@@ -206,18 +180,11 @@ Some text after`;
 
     const result = processDrawerBlocks(content, context);
 
-    const expected = `Some text before
-
-<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>Notes</AccordionTrigger>
-    <AccordionContent>
+    const expected = `Some text before\n\n\n\n<Accordions type="single" collapsible>
+  <Accordion title="Notes" id="drawer-0">
 Drawer content
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>
-
-Some text after`;
+  </Accordion>
+</Accordions>\n\n\n\nSome text after`;
 
     expect(result).toBe(expected);
   });
@@ -239,10 +206,8 @@ Some more text.
 
     const result = processDrawerBlocks(content, context);
 
-    const expected = `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>Complex</AccordionTrigger>
-    <AccordionContent>
+    const expected = `\n\n<Accordions type="single" collapsible>
+  <Accordion title="Complex" id="drawer-0">
 This is a drawer with
 multiple lines and
 different content types.
@@ -252,9 +217,8 @@ different content types.
   - Nested item
 
 Some more text.
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 
     expect(result).toBe(expected);
   });
@@ -262,14 +226,11 @@ Some more text.
 
 describe('restoreDrawerBlocks', () => {
   it('should be a no-op for accordions', () => {
-    const markdown = `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="drawer-0">
-    <AccordionTrigger>Notes</AccordionTrigger>
-    <AccordionContent>
+    const markdown = `\n\n<Accordions type="single" collapsible>
+  <Accordion title="Notes" id="drawer-0">
 Some content
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 
     const context = createBlockContext();
 

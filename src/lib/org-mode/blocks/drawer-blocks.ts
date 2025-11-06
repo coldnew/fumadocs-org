@@ -56,8 +56,14 @@ export function restoreDrawerBlocks(
  * Check if a drawer should be skipped (not converted to accordion)
  */
 function shouldSkipDrawer(drawerName: string): boolean {
-  // Skip common special drawers that have specific meanings
-  const skipDrawers = new Set(['properties', 'logbook', 'clock', 'effort']);
+  // Skip common special drawers that shouldn't be converted to accordions
+  const skipDrawers = new Set([
+    'properties',
+    'logbook',
+    'clock',
+    'effort',
+    'task',
+  ]);
 
   return skipDrawers.has(drawerName.toLowerCase());
 }
@@ -79,14 +85,11 @@ function createAccordionJSX(
   // Process the content (convert org markup to markdown)
   const processedContent = processDrawerContent(content);
 
-  return `<Accordion type="single" collapsible className="w-full">
-  <AccordionItem value="${id}">
-    <AccordionTrigger>${displayTitle}</AccordionTrigger>
-    <AccordionContent>
+  return `\n\n<Accordions type="single" collapsible>
+  <Accordion title="${displayTitle}" id="${id}">
 ${processedContent}
-    </AccordionContent>
-  </AccordionItem>
-</Accordion>`;
+  </Accordion>
+</Accordions>\n\n`;
 }
 
 /**
