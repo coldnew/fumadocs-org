@@ -1,7 +1,20 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { convertOrgToMdx } from './serialize';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 
 describe('serialize (Org → MDX)', () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'org-include-test-'));
+  });
+
+  afterEach(() => {
+    // Clean up temp directory
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  });
   it('should convert basic Org content to MDX', async () => {
     const orgContent = `* Hello World
 
@@ -225,5 +238,84 @@ Some text without proper structure.`;
     expect(result.markdown).toBe(`# Unclosed heading
 
 Some text without proper structure.`);
+  });
+
+  it('should process #INCLUDE directives for Org files', async () => {
+    // Create an included file
+    const includedContent = `* Included Heading
+
+This is included content.`;
+    const includedPath = path.join(tempDir, 'included.org');
+    fs.writeFileSync(includedPath, includedContent);
+
+    // Create main file with include
+    const mainContent = `* Main Document
+
+#+INCLUDE: "included.org"
+
+End of main document.`;
+
+    const result = await convertOrgToMdx(mainContent, 'main', {
+      basePath: tempDir,
+    });
+
+    expect(result.frontmatter).toBe(
+      '---\ntitle: Main\ndescription: Generated from Org-mode\n---\n\n',
+    );
+    expect(result.markdown).toBe(`# Main Document
+
+<include>included.shared.org.mdx</include>
+
+End of main document.`);
+
+    // Check that the included file was converted
+    const sharedMdxPath = path.join(tempDir, 'included.shared.org.mdx');
+    expect(fs.existsSync(sharedMdxPath)).toBe(true);
+    const sharedContent = fs.readFileSync(sharedMdxPath, 'utf8');
+    expect(sharedContent).toContain('# Included Heading');
+  });
+
+  it('should handle missing include files gracefully', async () => {
+    const mainContent = `* Main Document
+
+#+INCLUDE: "missing.org"
+
+End of main document.`;
+
+    const result = await convertOrgToMdx(mainContent, 'main', {
+      basePath: tempDir,
+    });
+
+    expect(result.markdown).toContain(
+      '<!-- Include file not found: missing.org -->',
+    );
+  });
+
+  it('should prevent circular includes', async () => {
+    // Create file A that includes file B
+    const fileAContent = `* File A
+
+#+INCLUDE: "fileB.org"
+
+End A.`;
+    const fileAPath = path.join(tempDir, 'fileA.org');
+    fs.writeFileSync(fileAPath, fileAContent);
+
+    // Create file B that includes file A
+    const fileBContent = `* File B
+
+#+INCLUDE: "fileA.org"
+
+End B.`;
+    const fileBPath = path.join(tempDir, 'fileB.org');
+    fs.writeFileSync(fileBPath, fileBContent);
+
+    const result = await convertOrgToMdx(fileAContent, 'fileA', {
+      basePath: tempDir,
+    });
+
+    expect(result.markdown).toContain(
+      '<!-- Circular include skipped: fileA.org -->',
+    );
   });
 });

@@ -210,4 +210,23 @@ Some text.
 
 `);
   });
+
+  it('should convert include tags back to INCLUDE directives', async () => {
+    const mdxContent = `# Main Document
+
+<include>included.shared.org.mdx</include>
+
+End of main document.`;
+
+    const result = await convertMdxToOrg(mdxContent, 'test');
+
+    expect(result.keywords).toBe('');
+    expect(result.org).toBe(`* Main Document
+
+#+INCLUDE: "included.org"
+
+End of main document.
+
+`);
+  });
 });

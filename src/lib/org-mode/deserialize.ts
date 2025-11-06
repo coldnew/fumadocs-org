@@ -112,8 +112,32 @@ function astToOrg(node: any, depth = 0): string {
     case 'emphasis':
       return '/' + node.children.map(astToOrg).join('') + '/';
     case 'mdxJsxFlowElement':
-      return `#+begin_export jsx\n${mdxJsxToString(node)}\n#+end_export\n\n`;
+      // Handle include tags
+      const jsxStringFlow = mdxJsxToString(node);
+      if (jsxStringFlow.includes('<include>')) {
+        const start = jsxStringFlow.indexOf('<include>');
+        const end = jsxStringFlow.indexOf('</include>', start);
+        if (start !== -1 && end !== -1) {
+          const fileName = jsxStringFlow.slice(start + 9, end);
+          // Convert back to .org extension
+          const orgFile = fileName.replace('.shared.org.mdx', '.org');
+          return `#+INCLUDE: "${orgFile}"\n`;
+        }
+      }
+      return `#+begin_export jsx\n${jsxStringFlow}\n#+end_export\n\n`;
     case 'mdxJsxTextElement':
+      // Handle include tags
+      const jsxStringText = mdxJsxToString(node);
+      if (jsxStringText.includes('<include>')) {
+        const start = jsxStringText.indexOf('<include>');
+        const end = jsxStringText.indexOf('</include>', start);
+        if (start !== -1 && end !== -1) {
+          const fileName = jsxStringText.slice(start + 9, end);
+          // Convert back to .org extension
+          const orgFile = fileName.replace('.shared.org.mdx', '.org');
+          return `#+INCLUDE: "${orgFile}"`;
+        }
+      }
       return `#+begin_export jsx\n${mdxJsxToString(node)}\n#+end_export`;
     case 'blockquote':
       return (

@@ -81,6 +81,7 @@ async function main() {
     const result = await convertOrgToMdx(
       orgContent,
       path.basename(orgFile, '.org'),
+      { basePath: path.dirname(orgPath) },
     );
 
     // Modify frontmatter to include checksum

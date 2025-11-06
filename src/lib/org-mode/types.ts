@@ -10,6 +10,7 @@ export interface OrgKeywords {
 export interface ConversionOptions {
   defaultTitle?: string;
   defaultDescription?: string;
+  basePath?: string; // Base path for resolving includes
 }
 
 export interface ConversionResult {
@@ -127,6 +128,11 @@ export interface CalloutBlock {
 
 export interface ExampleBlock {
   content: string;
+}
+
+export interface IncludeBlock {
+  file: string;
+  index: number;
 }
 
 // Checkbox types

@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import parse from 'uniorg-parse';
 import uniorg2rehype from 'uniorg-rehype';
 import rehype2remark from 'rehype-remark';
@@ -6,7 +8,11 @@ import remarkStringify from 'remark-stringify';
 import { unified } from 'unified';
 import { visit } from 'unist-util-visit';
 import matter from 'gray-matter';
-import type { ConversionOptions, ConversionResult } from '@/lib/org-mode/types';
+import type {
+  ConversionOptions,
+  ConversionResult,
+  IncludeBlock,
+} from '@/lib/org-mode/types';
 import { createBlockContext } from '@/lib/org-mode/blocks/types';
 import { createPluginContext } from '@/lib/org-mode/types';
 import {
@@ -50,6 +56,76 @@ function convertFiguresToHtml() {
 }
 
 /**
+ * Extract and process #INCLUDE directives
+ */
+async function processIncludes(
+  orgContent: string,
+  basePath: string,
+  processedFiles: Set<string> = new Set(),
+): Promise<string> {
+  const lines = orgContent.split(/\r?\n/);
+  const processedLines: string[] = [];
+  const includePattern = /^#\+INCLUDE:\s*"([^"]+)"/;
+
+  for (const line of lines) {
+    const match = line.match(includePattern);
+    if (match) {
+      const includeFile = match[1];
+      const includePath = path.resolve(basePath, includeFile);
+
+      // Prevent circular includes
+      if (processedFiles.has(includePath)) {
+        console.warn(`Circular include detected: ${includePath}`);
+        processedLines.push(
+          `<!-- Circular include skipped: ${includeFile} -->`,
+        );
+        continue;
+      }
+
+      if (fs.existsSync(includePath)) {
+        const includeContent = fs.readFileSync(includePath, 'utf8');
+        const includeBasePath = path.dirname(includePath);
+
+        // Recursively process includes in the included file
+        const processedIncludeContent = await processIncludes(
+          includeContent,
+          includeBasePath,
+          new Set([...processedFiles, includePath]),
+        );
+
+        // If it's an .org file, convert it to MDX
+        if (includeFile.endsWith('.org')) {
+          // Convert the included org file to MDX
+          const includeResult = await convertOrgToMdx(
+            includeContent,
+            path.basename(includeFile, '.org'),
+            { basePath: includeBasePath },
+          );
+          // Write the converted MDX to .shared.org.mdx file
+          const sharedMdxPath = includePath.replace('.org', '.shared.org.mdx');
+          const sharedMdxContent =
+            includeResult.frontmatter + '\n' + includeResult.markdown;
+          fs.writeFileSync(sharedMdxPath, sharedMdxContent);
+          // Replace with include tag
+          const includeTag = `<include>${includeFile.replace('.org', '.shared.org.mdx')}</include>`;
+          processedLines.push(includeTag);
+        } else {
+          // For non-org files, include the content directly
+          processedLines.push(processedIncludeContent);
+        }
+      } else {
+        console.warn(`Include file not found: ${includePath}`);
+        processedLines.push(`<!-- Include file not found: ${includeFile} -->`);
+      }
+    } else {
+      processedLines.push(line);
+    }
+  }
+
+  return processedLines.join('\n');
+}
+
+/**
  * Convert Org-mode content to MDX with frontmatter
  *
  * This function serializes Org-mode syntax into MDX format,
@@ -61,8 +137,12 @@ export async function convertOrgToMdx(
   filename: string,
   options: ConversionOptions = {},
 ): Promise<ConversionResult> {
+  const basePath = options.basePath || process.cwd();
   // Extract keywords first before modifying content
   const keywords = extractOrgKeywords(orgContent);
+
+  // Process includes
+  orgContent = await processIncludes(orgContent, basePath);
 
   // Parse date if present
   if (keywords.date) {
