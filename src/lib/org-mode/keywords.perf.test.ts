@@ -34,10 +34,6 @@ describe('Frontmatter Parsing Performance', () => {
     const endTime = performance.now();
     const duration = endTime - startTime;
 
-    console.log(
-      `Frontmatter parsing took ${duration.toFixed(2)}ms for ${content.length} characters`,
-    );
-
     // Should complete in reasonable time (less than 100ms for 500 keywords)
     expect(duration).toBeLessThan(100);
     expect(Object.keys(keywords)).toHaveLength(510); // 500 keywords + 10 dates
@@ -60,8 +56,6 @@ describe('Frontmatter Parsing Performance', () => {
     const endTime = performance.now();
     const duration = endTime - startTime;
 
-    console.log(`DATE parsing took ${duration.toFixed(2)}ms`);
-
     // Should complete quickly
     expect(duration).toBeLessThan(50);
   });
@@ -82,10 +76,6 @@ describe('Frontmatter Parsing Performance', () => {
 
     const endTime = performance.now();
     const duration = endTime - startTime;
-
-    console.log(
-      `Regex matching took ${duration.toFixed(2)}ms for ${lines.length} lines, found ${matchCount} matches`,
-    );
 
     expect(matchCount).toBeGreaterThan(0);
     expect(duration).toBeLessThan(20);

@@ -75,7 +75,6 @@ async function processIncludes(
 
       // Prevent circular includes
       if (processedFiles.has(includePath)) {
-        console.warn(`Circular include detected: ${includePath}`);
         processedLines.push(
           `<!-- Circular include skipped: ${includeFile} -->`,
         );
@@ -93,28 +92,9 @@ async function processIncludes(
           new Set([...processedFiles, includePath]),
         );
 
-        // If it's an .org file, convert it to MDX
-        if (includeFile.endsWith('.org')) {
-          // Convert the included org file to MDX
-          const includeResult = await convertOrgToMdx(
-            includeContent,
-            path.basename(includeFile, '.org'),
-            { basePath: includeBasePath },
-          );
-          // Write the converted MDX to .shared.org.mdx file
-          const sharedMdxPath = includePath.replace('.org', '.shared.org.mdx');
-          const sharedMdxContent =
-            includeResult.frontmatter + '\n' + includeResult.markdown;
-          fs.writeFileSync(sharedMdxPath, sharedMdxContent);
-          // Replace with include tag
-          const includeTag = `<include>${includeFile.replace('.org', '.shared.org.mdx')}</include>`;
-          processedLines.push(includeTag);
-        } else {
-          // For non-org files, include the content directly
-          processedLines.push(processedIncludeContent);
-        }
+        // Include the processed content directly
+        processedLines.push(processedIncludeContent);
       } else {
-        console.warn(`Include file not found: ${includePath}`);
         processedLines.push(`<!-- Include file not found: ${includeFile} -->`);
       }
     } else {
@@ -136,13 +116,14 @@ export async function convertOrgToMdx(
   orgContent: string,
   filename: string,
   options: ConversionOptions = {},
+  processedFiles: Set<string> = new Set(),
 ): Promise<ConversionResult> {
   const basePath = options.basePath || process.cwd();
   // Extract keywords first before modifying content
   const keywords = extractOrgKeywords(orgContent);
 
   // Process includes
-  orgContent = await processIncludes(orgContent, basePath);
+  orgContent = await processIncludes(orgContent, basePath, processedFiles);
 
   // Parse date if present
   if (keywords.date) {

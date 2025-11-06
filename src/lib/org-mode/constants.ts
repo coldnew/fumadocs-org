@@ -55,7 +55,12 @@ export const PATTERNS = {
 } as const;
 
 // Keywords to skip during extraction (cause issues or are not useful)
-export const SKIP_KEYWORDS = new Set(['options', 'latex_header', 'date']);
+export const SKIP_KEYWORDS = new Set([
+  'options',
+  'latex_header',
+  'date',
+  'include',
+]);
 
 // Callout type mappings from org-mode to Fumadocs
 export const CALLOUT_TYPE_MAP: Record<string, string> = {

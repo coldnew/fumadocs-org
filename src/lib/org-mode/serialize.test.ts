@@ -264,15 +264,11 @@ End of main document.`;
     );
     expect(result.markdown).toBe(`# Main Document
 
-<include>included.shared.org.mdx</include>
+# Included Heading
+
+This is included content.
 
 End of main document.`);
-
-    // Check that the included file was converted
-    const sharedMdxPath = path.join(tempDir, 'included.shared.org.mdx');
-    expect(fs.existsSync(sharedMdxPath)).toBe(true);
-    const sharedContent = fs.readFileSync(sharedMdxPath, 'utf8');
-    expect(sharedContent).toContain('# Included Heading');
   });
 
   it('should handle missing include files gracefully', async () => {
@@ -315,7 +311,7 @@ End B.`;
     });
 
     expect(result.markdown).toContain(
-      '<!-- Circular include skipped: fileA.org -->',
+      '<!-- Circular include skipped: fileB.org -->',
     );
   });
 });
