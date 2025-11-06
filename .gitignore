@@ -5,8 +5,6 @@
 .contentlayer
 .content-collections
 .source
-.cache
-content/**/*.org.mdx
 
 # test & build
 /coverage
