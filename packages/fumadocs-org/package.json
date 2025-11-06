@@ -10,7 +10,13 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    }
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "import": "./dist/next.mjs",
+      "require": "./dist/next.js"
+    },
+    "./loader-org": "./loader-org.cjs"
   },
   "scripts": {
     "build": "tsup",
@@ -30,12 +36,14 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/webpack": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^1.0.0",
+    "webpack": "^5.0.0"
   },
   "peerDependencies": {
     "fumadocs-core": "*",
