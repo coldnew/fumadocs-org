@@ -1,69 +1,46 @@
 import type { Plugin } from 'fumadocs-mdx';
 
 /**
+ * Helper function to extend isFileSupported to include .org files
+ */
+function extendFileSupported(
+  originalIsFileSupported: (filePath: string) => boolean,
+) {
+  return (filePath: string) => {
+    const originalSupported = originalIsFileSupported(filePath);
+    const orgSupported = filePath.endsWith('.org');
+    return originalSupported || orgSupported;
+  };
+}
+
+/**
  * Plugin to extend fumadocs-mdx to support .org files
- * by modifying collection configurations to include org files
+ * Enhances collections after they're built to include .org file support
  */
 export function orgSupportPlugin(): Plugin {
   return {
     name: 'org-support',
     config(config) {
-      // Modify each doc collection to include .org files
+      // Enhance each collection to support .org files
       config.collectionList = config.collectionList.map((collection: any) => {
-        if (collection.type === 'doc' || collection.type === 'docs') {
-          // For doc collections, extend the files pattern to include .org
-          if (collection.type === 'doc') {
-            const files = collection.files || [`**/*.{mdx,md}`];
-
-            // Check if .org is already included
-            if (!files.some((pattern: string) => pattern.includes('.org'))) {
-              // Add .org to the existing patterns
-              const newFiles = files
-                .map((pattern: string) => {
-                  if (pattern.includes('{mdx,md}')) {
-                    return pattern.replace('{mdx,md}', '{mdx,md,org}');
-                  } else if (
-                    pattern.includes('mdx') ||
-                    pattern.includes('md')
-                  ) {
-                    // For patterns like "**/*.mdx", add org variant
-                    const basePattern = pattern.replace(/\.(mdx|md)$/, '');
-                    return [pattern, `${basePattern}.org`];
-                  }
-                  return pattern;
-                })
-                .flat();
-
-              return {
-                ...collection,
-                files: newFiles,
-                // Override isFileSupported to include .org files
-                isFileSupported: (filePath: string) => {
-                  const originalSupported =
-                    collection.isFileSupported(filePath);
-                  const orgSupported = filePath.endsWith('.org');
-                  return originalSupported || orgSupported;
-                },
-              };
-            }
-          } else if (collection.type === 'docs') {
-            // For docs collections, modify both docs and meta
-            return {
-              ...collection,
-              docs: {
-                ...collection.docs,
-                files: collection.docs.files || [`**/*.{mdx,md,org}`],
-                isFileSupported: (filePath: string) => {
-                  const originalSupported =
-                    collection.docs.isFileSupported(filePath);
-                  const orgSupported = filePath.endsWith('.org');
-                  return originalSupported || orgSupported;
-                },
-              },
-            };
-          }
+        if (collection.type === 'doc') {
+          // Extend isFileSupported to include .org files
+          return {
+            ...collection,
+            isFileSupported: extendFileSupported(collection.isFileSupported),
+          };
+        } else if (collection.type === 'docs') {
+          // For docs collections, enhance both docs and meta
+          return {
+            ...collection,
+            docs: {
+              ...collection.docs,
+              isFileSupported: extendFileSupported(
+                collection.docs.isFileSupported,
+              ),
+            },
+          };
         }
-
         return collection;
       });
 
