@@ -32,6 +32,11 @@
       "import": "./dist/runtime/next/index.mjs",
       "require": "./dist/runtime/next/index.js"
     },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "import": "./dist/config/index.mjs",
+      "require": "./dist/config/index.js"
+    },
     "./loader-org": "./loader-org.cjs"
   },
   "scripts": {

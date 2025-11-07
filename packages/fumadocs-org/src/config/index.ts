@@ -1,11 +1,10 @@
-// Main entry point for fumadocs-org package
-export * from './core';
-export * from './next';
-
-// Export config schemas and utilities that don't conflict with core exports
+// Re-export all schemas and utilities from fumadocs-mdx/config as aliases
 export {
   frontmatterSchema,
   metaSchema,
+  defineCollections,
+  defineConfig,
+  defineDocs,
   getDefaultMDXOptions,
   remarkInclude,
   // Type exports
@@ -18,4 +17,4 @@ export {
   type GlobalConfig,
   type MetaCollection,
   type PostprocessOptions,
-} from './config';
+} from 'fumadocs-mdx/config';

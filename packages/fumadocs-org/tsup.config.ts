@@ -8,6 +8,7 @@ export default defineConfig({
     'src/next/index.ts',
     'src/loaders/org.ts',
     'src/runtime/next/index.ts',
+    'src/config/index.ts',
     'src/bin.ts',
   ],
   format: ['cjs', 'esm'],
