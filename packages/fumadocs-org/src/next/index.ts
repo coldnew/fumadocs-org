@@ -4,7 +4,7 @@ import type {
   TurbopackLoaderOptions,
   TurbopackOptions,
 } from 'next/dist/server/config-shared';
-import { createMDX } from 'fumadocs-mdx/next';
+import { createMDX as createFumadocsMDX } from 'fumadocs-mdx/next';
 import { orgSupportPlugin } from '../plugin';
 
 export interface CreateOrgOptions {
@@ -34,7 +34,7 @@ export function createOrg(createOptions: CreateOrgOptions = {}) {
   };
 
   // Use createMDX as base - our plugin handles org file support
-  const withMDX = createMDX({
+  const withMDX = createFumadocsMDX({
     configPath: options.configPath,
     outDir: options.outDir,
   });
@@ -111,6 +111,9 @@ export function createOrg(createOptions: CreateOrgOptions = {}) {
     };
   };
 }
+
+// Add createMDX as alias for drop-in replacement
+export const createMDX = createOrg;
 
 // Re-export postInstall from fumadocs-mdx for compatibility
 export { postInstall } from 'fumadocs-mdx/next';
