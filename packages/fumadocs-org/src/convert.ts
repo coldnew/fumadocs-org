@@ -1,6 +1,6 @@
 import { glob } from 'tinyglobby';
 import { readFile, writeFile } from 'node:fs/promises';
-import { convertOrgToMdx } from '@coldnew-blog/org2mdx';
+import { convertOrgToMdx } from './core/index';
 import * as path from 'node:path';
 
 export async function convertOrgFilesToMdx() {

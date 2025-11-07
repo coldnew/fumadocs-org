@@ -1,5 +1,5 @@
 import type { LoaderContext } from 'webpack';
-import { convertOrgToMdx } from '@coldnew-blog/org2mdx';
+import { convertOrgToMdx } from '../core/index';
 
 export interface OrgLoaderOptions {
   isDev?: boolean;
