@@ -1,7 +1,8 @@
-# coldnew-blog
+# fumadocs-org
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+Integrate org-mode support into Fumadocs for seamless documentation with Emacs org-mode files.
+
+> **Note**: This project is currently a work in progress.
 
 Run development server:
 
