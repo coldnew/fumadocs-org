@@ -28,6 +28,7 @@ Content here.`;
       title: 'Test Document',
       author: 'John Doe',
       description: 'A test document',
+      date: '2024-01-01',
     });
   });
 
@@ -65,7 +66,7 @@ Content here.`;
     });
   });
 
-  it('should skip date keyword', () => {
+  it('should extract date keyword', () => {
     const content = `#+DATE: 2024-01-01
 #+TITLE: Dated Document`;
 
@@ -73,6 +74,7 @@ Content here.`;
 
     expect(result).toEqual({
       title: 'Dated Document',
+      date: '2024-01-01',
     });
   });
 

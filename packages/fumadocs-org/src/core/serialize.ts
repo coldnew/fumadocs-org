@@ -8,15 +8,15 @@ import remarkStringify from 'remark-stringify';
 import { unified } from 'unified';
 import { visit } from 'unist-util-visit';
 import matter from 'gray-matter';
-import type {
-  ConversionOptions,
-  ConversionResult,
-  IncludeBlock,
-} from './types';
+import type { ConversionOptions, ConversionResult } from './types';
 import { createBlockContext } from './blocks/types';
 import { createPluginContext } from './types';
-import { extractOrgKeywords, getCalloutTypeFromOrgType } from './keywords';
-import { parseTime, formatToISOString } from './time';
+import {
+  extractOrgKeywords,
+  getCalloutTypeFromOrgType,
+  processKeywords,
+} from './keywords';
+
 import { generateDefaultTitle } from './utils';
 import { processBlocks, restoreBlocks } from './blocks';
 import {
@@ -117,20 +117,22 @@ export async function convertOrgToMdx(
 ): Promise<ConversionResult> {
   const basePath = options.basePath || process.cwd();
   // Extract keywords first before modifying content
-  const keywords = extractOrgKeywords(orgContent);
+  const rawKeywords = extractOrgKeywords(orgContent);
 
   // Process includes
   orgContent = await processIncludes(orgContent, basePath, processedFiles);
 
-  // Parse date if present
-  if (keywords.date) {
-    const parsedDate = parseTime(keywords.date);
-    if (parsedDate) {
-      keywords.date = formatToISOString(parsedDate);
-    }
-  }
+  // Create processing context
+  const processingContext = {
+    filename,
+    options,
+    originalContent: orgContent,
+  };
 
-  // Set defaults
+  // Process keywords using the new system
+  let keywords = processKeywords(rawKeywords, processingContext);
+
+  // Set defaults (only if not already set)
   if (!keywords.title) {
     keywords.title = options.defaultTitle || generateDefaultTitle(filename);
   }

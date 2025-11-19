@@ -1,5 +1,8 @@
 import type { OrgKeywords } from './types';
 import { SKIP_KEYWORDS } from './constants';
+import type { ProcessingContext } from './keyword-processors';
+import { getAllProcessors } from './keyword-processors';
+import { getFrontmatterConfig } from './frontmatter-config';
 
 // Simple LRU cache for keyword extraction results
 const keywordCache = new Map<string, OrgKeywords>();
@@ -68,6 +71,65 @@ function getCacheKey(content: string): string {
     hash = hash & hash; // Convert to 32-bit integer
   }
   return hash.toString();
+}
+
+/**
+ * Process keywords using registered processors
+ */
+export function processKeywords(
+  keywords: Record<string, string | undefined>,
+  context: ProcessingContext,
+): Record<string, any> {
+  const config = getFrontmatterConfig(context.options);
+  const processed: Record<string, any> = {};
+
+  // Apply field mappings and filter out undefined values
+  for (const [key, value] of Object.entries(keywords)) {
+    if (value === undefined) continue;
+
+    let finalKey = key;
+    const mappedKey = config.fieldMappings[key.toLowerCase()];
+    if (mappedKey && mappedKey !== key) {
+      finalKey = mappedKey;
+    }
+
+    processed[finalKey] = value;
+  }
+
+  // Process each keyword
+  for (const [key, value] of Object.entries(processed)) {
+    // Skip if in skip list
+    if (config.skipKeywords.has(key.toLowerCase())) {
+      delete processed[key];
+      continue;
+    }
+
+    // Apply processors in priority order
+    const processors = getAllProcessors();
+    let processedValue = value;
+
+    for (const processor of processors) {
+      if (
+        !processor.shouldProcess ||
+        processor.shouldProcess(key, processedValue)
+      ) {
+        try {
+          processedValue = processor.process(processedValue, key, context);
+          break; // Use first matching processor
+        } catch (error) {
+          console.warn(
+            `[ORG] Processor ${processor.name} failed for ${key}:`,
+            error,
+          );
+          // Keep original value if processing fails
+        }
+      }
+    }
+
+    processed[key] = processedValue;
+  }
+
+  return processed;
 }
 
 /**

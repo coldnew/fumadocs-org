@@ -7,11 +7,14 @@ export interface OrgKeywords {
   [key: string]: string | undefined;
 }
 
+import type { FrontmatterConfig } from './frontmatter-config';
+
 export interface ConversionOptions {
   defaultTitle?: string;
   defaultDescription?: string;
   basePath?: string; // Base path for resolving includes
   schema?: any; // Schema object (Zod or Standard Schema) for validation
+  frontmatterConfig?: FrontmatterConfig; // Configuration for frontmatter processing
 }
 
 export interface ConversionResult {

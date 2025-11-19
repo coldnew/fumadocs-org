@@ -54,12 +54,85 @@ export const PATTERNS = {
   TABLE_ALIGNMENT: /^(\s*)\|(.+)\|\s*$/gm,
 } as const;
 
+// Known org-mode frontmatter keywords (from org-mode documentation)
+export const ORG_FRONTMATTER_KEYWORDS = new Set([
+  // Standard keywords
+  'title',
+  'author',
+  'date',
+  'description',
+  'email',
+  'address',
+
+  // File-specific
+  'filetags',
+  'keywords',
+  'categories',
+  'archive',
+  'properties',
+
+  // Publishing
+  'publishing',
+  'language',
+  'subtitle',
+  'export_file_name',
+
+  // HTML/Export options
+  'html_head',
+  'html_head_extra',
+  'html_postamble',
+  'html_preamble',
+
+  // LaTeX options
+  'latex_class',
+  'latex_class_options',
+  'latex_header',
+  'latex_header_extra',
+
+  // Table of contents
+  'toc',
+  'num',
+  'priorities',
+
+  // Other common keywords
+  'startup',
+  'options',
+  'bind',
+  'select_tags',
+  'exclude_tags',
+]);
+
+// Keywords that should be processed as arrays
+export const ARRAY_KEYWORDS = new Set([
+  'tags',
+  'categories',
+  'keywords',
+  'authors',
+  'filetags',
+  'archives',
+  'properties',
+  'links',
+  'select_tags',
+  'exclude_tags',
+  'export_select_tags',
+  'export_exclude_tags',
+]);
+
 // Keywords to skip during extraction (cause issues or are not useful)
 export const SKIP_KEYWORDS = new Set([
   'options',
   'latex_header',
-  'date',
   'include',
+  'startup',
+  'language',
+  'html_head',
+  'html_head_extra',
+  'latex_class',
+  'latex_class_options',
+  'latex_header_extra',
+  'bind',
+  'filevars',
+  'property',
 ]);
 
 // Callout type mappings from org-mode to Fumadocs
