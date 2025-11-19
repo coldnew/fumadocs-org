@@ -11,6 +11,7 @@ export interface ConversionOptions {
   defaultTitle?: string;
   defaultDescription?: string;
   basePath?: string; // Base path for resolving includes
+  schema?: any; // Schema object (Zod or Standard Schema) for validation
 }
 
 export interface ConversionResult {

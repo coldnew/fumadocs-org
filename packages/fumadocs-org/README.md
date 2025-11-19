@@ -56,6 +56,75 @@ Both approaches automatically enable:
 - ✅ Support for `.org`, `.mdx`, and `.md` files
 - ✅ All existing fumadocs-mdx functionality
 
+## Schema Validation
+
+fumadocs-org supports schema validation for org-mode frontmatter using Zod or Standard Schema V1 compatible libraries.
+
+### Basic Schema Validation
+
+```typescript
+// source.config.ts
+import { defineDocs } from 'fumadocs-org';
+import { z } from 'zod';
+
+const frontmatterSchema = z.object({
+  title: z.string().min(1),
+  date: z.string().optional(),
+  author: z.string().optional(),
+});
+
+export const docs = defineDocs({
+  dir: 'content/docs',
+  docs: {
+    schema: frontmatterSchema,
+  },
+});
+```
+
+### Advanced Schema Validation
+
+```typescript
+// source.config.ts
+import { defineDocs } from 'fumadocs-org';
+import { z } from 'zod';
+
+const frontmatterSchema = z.object({
+  title: z
+    .string()
+    .min(1, 'Title is required')
+    .max(100, 'Title too long')
+    .refine((title) => !title.includes('Invalid'), {
+      message: 'Title cannot contain "Invalid"',
+    }),
+  date: z.string().datetime().optional(),
+  tags: z.array(z.string()).optional(),
+  draft: z.boolean().default(false),
+});
+
+export const docs = defineDocs({
+  dir: 'content/docs',
+  docs: {
+    schema: frontmatterSchema,
+  },
+});
+```
+
+### Error Handling
+
+When validation fails, the build will stop with a descriptive error message:
+
+```
+Error: [MDX] invalid frontmatter in content/docs/example.org:
+- title: Title is required
+- date: Invalid datetime format
+```
+
+### Supported Schema Libraries
+
+- **Zod** (recommended): `import { z } from 'zod'`
+- **Standard Schema V1**: Any library implementing the Standard Schema V1 interface
+- **Custom schemas**: Objects with a `.parse()` method for validation
+
 ## Development
 
 ```bash

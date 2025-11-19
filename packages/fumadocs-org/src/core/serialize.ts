@@ -231,6 +231,40 @@ export async function convertOrgToMdx(
     return `\`\`\`\n${trimmed}\n\`\`\``;
   });
 
+  // Perform schema validation if provided
+  if (options.schema) {
+    try {
+      // Try Zod-style validation first
+      if (typeof options.schema.parse === 'function') {
+        options.schema.parse(keywords);
+      }
+      // Try Standard Schema V1 validation
+      else if (typeof options.schema['~standard'] === 'object') {
+        const result = await options.schema['~standard'].validate(keywords);
+        if (result.issues) {
+          const errorMessages = result.issues
+            .map(
+              (issue: any) =>
+                `${issue.path?.join('.') || 'field'}: ${issue.message}`,
+            )
+            .join(', ');
+          throw new Error(`Schema validation failed: ${errorMessages}`);
+        }
+      } else {
+        console.warn('[ORG] Unknown schema type provided');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(
+          `Schema validation failed for ${filename}: ${error.message}`,
+        );
+      }
+      throw new Error(
+        `Schema validation failed for ${filename}: Unknown error`,
+      );
+    }
+  }
+
   // Generate frontmatter
   const frontmatter = matter.stringify('', keywords);
 
