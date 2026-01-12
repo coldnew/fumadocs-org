@@ -1,8 +1,0 @@
-#+TITLE: Hi
-
-
-HI o
-
-#+begin_src javascript
-console.log("hihi");
-#+end_src

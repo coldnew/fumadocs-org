@@ -1,0 +1,16 @@
+#+TITLE: org example
+
+* title
+
+this is org-mode exampasda
+
+#+begin_src javascript
+console.log("hot reload works!");
+#+end_src
+
+#+begin_src c++
+  int main()
+  {
+      printf("asdadad");
+  }
+#+end_src
